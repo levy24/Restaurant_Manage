@@ -22,10 +22,10 @@ public class Drink_Cache {
         Connection conn = connector.connection;
         if (conn != null) {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM drink_category";
+            String sql = "SELECT * FROM food_drink WHERE classify = 1";
             ResultSet resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
-                Drink_ID.add(resultSet.getInt("Drink_ID"));
+                Drink_ID.add(resultSet.getInt("ID"));
                 Drink_Name.add(resultSet.getString("Name"));
                 Drink_Price.add(resultSet.getInt("Price"));
                 Drink_Quantity.add(resultSet.getInt("Quantity"));
@@ -42,7 +42,7 @@ public class Drink_Cache {
         connect connector = new connect();
         Connection conn = connector.connection;
         if (conn != null) {
-            String sql = "INSERT INTO drink_category (Drink_ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO food_drink (ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
             PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, name);
@@ -62,7 +62,7 @@ public class Drink_Cache {
 	    connect connector = new connect();
 	    Connection conn = connector.connection;
 	    if (conn != null) {
-	        String sql = "UPDATE drink_category SET Drink_ID = ?, Name = ?, Price = ?, Quantity = ? WHERE Drink_ID = ?";
+	        String sql = "UPDATE food_drink SET ID = ?, Name = ?, Price = ?, Quantity = ? WHERE ID = ?";
 	        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
 	        preparedStatement.setInt(1, newId);
 	        preparedStatement.setString(2, newName);
@@ -88,7 +88,7 @@ public class Drink_Cache {
 	    connect connector = new connect();
 	    Connection conn = connector.connection;
 	    if (conn != null) {
-	        String sql = "DELETE FROM drink_category WHERE Drink_ID = ?";
+	        String sql = "DELETE FROM food_drink WHERE ID = ?";
 	        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
 	        preparedStatement.setInt(1, id);
 	        preparedStatement.executeUpdate();
@@ -103,4 +103,5 @@ public class Drink_Cache {
             Drink_Quantity.remove(index);
         }
 	}
-}
+	
+	}

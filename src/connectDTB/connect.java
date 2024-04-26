@@ -18,6 +18,7 @@ public class connect {
             System.out.println("Error: " + e);
         }
 	}
+
 	public void closeConnection() {
         try {
             if (connection != null) {

@@ -11,6 +11,8 @@ import admin.drinks;
 import admin.employee;
 import admin.food;
 import connectDTB.connect;
+import staff.Bill_Manage;
+import staff.table_manage;
 
 public class dangnhap1 extends JFrame implements ActionListener {
 
@@ -18,6 +20,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
     private JTextField textField;
     private JPasswordField password;
     private boolean isAdmin;
+    public String loggedInUserID;
 
     /**
      * Create the application.
@@ -38,7 +41,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
         frame.getContentPane().setLayout(null);
 
         JLabel lblNewLabel = new JLabel("New label");
-        lblNewLabel.setIcon(new ImageIcon("D:\\PBL\\PBL3\\bin\\image\\logo.png"));
+        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\THAO VY\\eclipse-workspace\\PBL\\src\\image\\logo.png"));
         lblNewLabel.setBounds(-50, -50, 450, 450);
         frame.getContentPane().add(lblNewLabel);
 
@@ -99,6 +102,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
         boolean isValidLogin = checkLogin(username, inputpassword);
 
         if (isValidLogin) {
+        	loggedInUserID = username;
             // Đóng cửa sổ hiện tại
             frame.dispose();
             if (isAdmin) {
@@ -112,16 +116,18 @@ public class dangnhap1 extends JFrame implements ActionListener {
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-                
-//            	adminInterface.setVisible(true);
+				}    
             } else {
-                // Hiển thị giao diện cho nhân viên
-                // employeeInterface.setVisible(true);
+                table_manage vidu = new table_manage();
+                vidu.show();
             }
         } else {
             JOptionPane.showMessageDialog(frame, "Tên đăng nhập hoặc mật khẩu không đúng", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    public String getLoggedInUserID() {
+        return loggedInUserID;
     }
 
     public boolean checkLogin(String username, String password) {

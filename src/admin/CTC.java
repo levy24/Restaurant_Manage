@@ -23,6 +23,7 @@ public class CTC extends JFrame implements ActionListener {
     public food faFood; 
     public drinks dr; 
     public employee ep;
+    public chart chart;
     private JTable tbFood;
     private JTextField txtTim;
     private JTextField txtMa;
@@ -40,31 +41,31 @@ public class CTC extends JFrame implements ActionListener {
          frame.setJMenuBar(menuBar);
 
          JMenu mnQuanLy = new JMenu("Quản lý");
-         mnQuanLy.setIcon(new ImageIcon(CTC.class.getResource("/image/Papirus-Team-Papirus-Apps-System-file-manager.24.png")));
+         //mnQuanLy.setIcon(new ImageIcon(CTC.class.getResource("/image/Papirus-Team-Papirus-Apps-System-file-manager.24.png")));
          menuBar.add(mnQuanLy);
 
          JMenuItem mntmMonAn = new JMenuItem("Thực đơn");
-         mntmMonAn.setIcon(new ImageIcon(CTC.class.getResource("/image/Jamespeng-Cuisine-Pork-Chop-Set.24.png")));
+         //mntmMonAn.setIcon(new ImageIcon(CTC.class.getResource("/image/Jamespeng-Cuisine-Pork-Chop-Set.24.png")));
          mnQuanLy.add(mntmMonAn);
          mntmMonAn.addActionListener(this);
 
          JMenuItem mntmNhanVien = new JMenuItem("Nhân viên");
-         mntmNhanVien.setIcon(new ImageIcon(CTC.class.getResource("/image/Hopstarter-Sleek-Xp-Basic-Preppy.24.png")));
+         //mntmNhanVien.setIcon(new ImageIcon(CTC.class.getResource("/image/Hopstarter-Sleek-Xp-Basic-Preppy.24.png")));
          mnQuanLy.add(mntmNhanVien);
          
          JMenu mnNewMenu = new JMenu("Thống kê");
-         mnNewMenu.setIcon(new ImageIcon(CTC.class.getResource("/image/Awicons-Vista-Artistic-Chart.24.png")));
+         //mnNewMenu.setIcon(new ImageIcon(CTC.class.getResource("/image/Awicons-Vista-Artistic-Chart.24.png")));
          menuBar.add(mnNewMenu);
          
          JMenuItem mntmDoanhthu = new JMenuItem("Doanh thu");
-         mntmDoanhthu.setIcon(new ImageIcon(CTC.class.getResource("/image/Designcontest-Ecommerce-Business-Dollar.24.png")));
+         //mntmDoanhthu.setIcon(new ImageIcon(CTC.class.getResource("/image/Designcontest-Ecommerce-Business-Dollar.24.png")));
          mnNewMenu.add(mntmDoanhthu);
          
          JMenuItem mntmXuatThongKe = new JMenuItem("Xuất thống kê");
          mnNewMenu.add(mntmXuatThongKe);
          
          JMenu mnTuyChon = new JMenu("Tùy chọn");
-         mnTuyChon.setIcon(new ImageIcon(CTC.class.getResource("/image/Dtafalonso-Android-Lollipop-Settings.24.png")));
+         //mnTuyChon.setIcon(new ImageIcon(CTC.class.getResource("/image/Dtafalonso-Android-Lollipop-Settings.24.png")));
          menuBar.add(mnTuyChon);
          
          JMenuItem mntmThoat = new JMenuItem("Thoát");
@@ -383,7 +384,7 @@ public class CTC extends JFrame implements ActionListener {
                 add_panel(dr);
                 break;  
             case "Doanh thu":
-                
+            	
                 break;
             case "Xuất thống kê":
                 

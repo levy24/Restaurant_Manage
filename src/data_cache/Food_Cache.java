@@ -22,10 +22,10 @@ public class Food_Cache {
 			if( conn != null) {
 			
 				Statement stmt = conn.createStatement();
-	        	String sql = "SELECT * FROM food_category";
+	        	String sql = "SELECT * FROM food_drink WHERE classify = 0";
 	        	ResultSet resultSet = stmt.executeQuery(sql);
 	        	while (resultSet.next()) {
-	        		FID.add(resultSet.getInt("Food_ID"));
+	        		FID.add(resultSet.getInt("ID"));
 	        		FName.add(resultSet.getString("Name"));
 	        		FPrice.add(resultSet.getInt("Price"));
 	        		FQuantity.add(resultSet.getInt("Quantity"));
@@ -42,7 +42,7 @@ public class Food_Cache {
 	        connect connector = new connect();
 	        Connection conn = connector.connection;
 	        if (conn != null) {
-	            String sql = "INSERT INTO food_category (Food_ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
+	            String sql = "INSERT INTO food_drink (ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
 	            PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
 	            preparedStatement.setInt(1, id);
 	            preparedStatement.setString(2, name);
@@ -62,7 +62,7 @@ public class Food_Cache {
 		    connect connector = new connect();
 		    Connection conn = connector.connection;
 		    if (conn != null) {
-		        String sql = "UPDATE food_category SET Food_ID = ?, Name = ?, Price = ?, Quantity = ? WHERE Food_ID = ?";
+		        String sql = "UPDATE food_drink SET ID = ?, Name = ?, Price = ?, Quantity = ? WHERE ID = ?";
 		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
 		        preparedStatement.setInt(1, newId);
 		        preparedStatement.setString(2, newName);
@@ -88,7 +88,7 @@ public class Food_Cache {
 		    connect connector = new connect();
 		    Connection conn = connector.connection;
 		    if (conn != null) {
-		        String sql = "DELETE FROM food_category WHERE Food_ID = ?";
+		        String sql = "DELETE FROM food_drink WHERE ID = ?";
 		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
 		        preparedStatement.setInt(1, id);
 		        preparedStatement.executeUpdate();
@@ -103,4 +103,6 @@ public class Food_Cache {
 	            FQuantity.remove(index);
 	        }
 		}
+
+		
 }

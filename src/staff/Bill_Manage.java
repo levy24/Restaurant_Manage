@@ -78,36 +78,51 @@ public class Bill_Manage extends JFrame implements ActionListener{
     }
 
     private void updateTable() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/data"; 
-            Connection con = DriverManager.getConnection(url, "root", "");
-            String sql = "SELECT * FROM bill ";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
-            model.setRowCount(0); 
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                model.addColumn(metaData.getColumnLabel(columnIndex));
-                if (columnIndex == 2) {
-                    table.getColumnModel().getColumn(columnIndex - 1).setWidth(400);
-                }  
+    	try {
+    	    Class.forName("com.mysql.jdbc.Driver");
+    	    String url = "jdbc:mysql://localhost:3306/data"; 
+    	    Connection con = DriverManager.getConnection(url, "root", "");
+    	    String sql = "SELECT * FROM bill ";
+    	    PreparedStatement pstmt = con.prepareStatement(sql);
+    	    ResultSet rs = pstmt.executeQuery();
+    	    
+    	    if (model.getColumnCount() == 0) { // Kiểm tra nếu model không có cột nào
+    	        ResultSetMetaData metaData = rs.getMetaData();
+    	        int columnCount = metaData.getColumnCount();
+    	        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+    	            String columnName = metaData.getColumnLabel(columnIndex);
+    	            if (!containsColumn(model, columnName)) { // Kiểm tra xem cột đã tồn tại trong model chưa
+    	                model.addColumn(columnName);
+    	                if (columnIndex == 2) {
+    	                    table.getColumnModel().getColumn(columnIndex - 1).setWidth(400);
+    	                }
+    	            }
+    	        }
+    	    }
+
+    	    while (rs.next()) {
+    	        Object[] row = new Object[model.getColumnCount()]; // Sử dụng số cột của model thay vì số cột của ResultSet
+    	        for (int i = 1; i <= model.getColumnCount(); i++) {
+    	            row[i - 1] = rs.getObject(i);
+    	        }
+    	      
+    	        model.addRow(row);
+    	    } 
+    	    rs.close();
+    	    pstmt.close();
+    	    con.close();
+    	} catch (Exception ex) {
+    	    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    	}
+    }
+    
+    private boolean containsColumn(DefaultTableModel model, String columnName) {
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            if (model.getColumnName(i).equals(columnName)) {
+                return true;
             }
-            while (rs.next()) {
-                Object[] row = new Object[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    row[i - 1] = rs.getObject(i);
-                }
-          
-                model.addRow(row);
-            } 
-            rs.close();
-            pstmt.close();
-            con.close();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return false;
     }
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
