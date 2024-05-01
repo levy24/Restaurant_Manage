@@ -31,7 +31,10 @@ public class dangnhap1 extends JFrame implements ActionListener {
         frame.setVisible(true);
     }
 
-    /**
+    public dangnhap1() 
+    {}
+
+	/**
      * Initialize the contents of the frame.
      */
     private void initialize() {
