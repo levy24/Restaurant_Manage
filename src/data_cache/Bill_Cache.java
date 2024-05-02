@@ -34,7 +34,7 @@ public class Bill_Cache {
         try {
         	connect connector = new connect();
 	        Connection con = connector.connection;
-            String sql = "INSERT INTO order_id (bill_ID, item_id, Quantity) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO order_details (bill_ID, item_id, Quantity) VALUES (?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, billID);
             pstmt.setInt(2, itemID);
