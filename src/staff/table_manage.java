@@ -78,24 +78,26 @@ public class table_manage extends JFrame {
     }
 	
 	public int getCurrentBillID() {
-        int currentBillID = 0;
-        try {
-        	connect connector = new connect();
-	        Connection con = connector.connection;
-            String sql = "SELECT MAX(bill_ID) FROM bill";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                currentBillID = rs.getInt(1);
-            }
-            rs.close();
-            pstmt.close();
-            con.close();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return currentBillID;
-    }
+	    int currentBillID = 0;
+	    try {
+	        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/data", "root", "");
+	        String sql = "SELECT MAX(bill_ID) FROM bill";
+	        PreparedStatement pstmt = con.prepareStatement(sql);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            currentBillID = rs.getInt(1);
+	            if (!rs.wasNull()) {
+	                currentBillID++; // Tăng giá trị lên một nếu kết quả không phải null
+	            }
+	        }
+	        rs.close();
+	        pstmt.close();
+	        con.close();
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	    return currentBillID;
+	}
 
 	/**
 	 * Create the frame.
@@ -325,10 +327,16 @@ public class table_manage extends JFrame {
 		btnChotDon.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
+				if (model.getRowCount() == 0) {
+		            JOptionPane.showMessageDialog(null, "Bạn chưa chọn món ăn nào.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+		            return;
+		        }
+				
 				dangnhap1 loginObject = new dangnhap1();
 				int tableID = Integer.parseInt(textpane.getText());
 		        String time = getTimeFromSystem(); 
-		        String empID = loginObject.getLoggedInUserID(); 
+		        //String empID = loginObject.getLoggedInUserID();
+		        String empID = "171200";
 		        long totalBill = total;
 		        Bill_Cache billCache = new Bill_Cache();
 		        int currentBillID = getCurrentBillID(); 
