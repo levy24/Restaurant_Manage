@@ -30,6 +30,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -101,8 +102,9 @@ public class table_manage extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
 	 */
-	public table_manage() {
+	public table_manage() throws SQLException {
 		int n = 25;
 		Color gr = new Color(0,255,128);
 		Color re = new Color(220,20,60);
@@ -332,15 +334,13 @@ public class table_manage extends JFrame {
 		            return;
 		        }
 				
-				dangnhap1 loginObject = new dangnhap1();
 				int tableID = Integer.parseInt(textpane.getText());
 		        String time = getTimeFromSystem(); 
-		        //String empID = loginObject.getLoggedInUserID();
-		        String empID = "171200";
+		        String empID = login.dangnhap1.loggedInUserID;
 		        long totalBill = total;
 		        Bill_Cache billCache = new Bill_Cache();
 		        int currentBillID = getCurrentBillID(); 
-		        boolean success = billCache.addBill(currentBillID, time, totalBill, tableID, empID);
+		        boolean success = billCache.addBill(currentBillID, time, totalBill, tableID, empID, 0);
 		        if (!success) {
 		            JOptionPane.showMessageDialog(null, "Lỗi khi thêm hóa đơn vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		            return;
@@ -349,13 +349,46 @@ public class table_manage extends JFrame {
 		        for (int i = 0; i < model.getRowCount(); i++) {
 		            int itemID = (int) model.getValueAt(i, 0);
 		            int quantity = (int) model.getValueAt(i, 3);
-		            success = billCache.addOrderDetail(currentBillID, itemID, quantity);
+		            int price = (int) model.getValueAt(i, 2)*quantity;
+		            success = billCache.addOrderDetail(currentBillID, itemID, quantity, price);
+		            if(isFoodSelected)
+						try {
+							Food_Cache.updateQuantity(itemID, quantity);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					else
+						try {
+							Drink_Cache.updateQuantity(itemID, quantity);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 		            if (!success) {
 		                JOptionPane.showMessageDialog(null, "Lỗi khi thêm chi tiết đơn hàng vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		                return;
 		            }
 		        }
-
+		        connect connector = new connect();
+				Connection conn = connector.connection;
+				Statement stmt = null;
+				try {
+					stmt = conn.createStatement();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		        if (success) {
+		        	  String updateTableQuery = "UPDATE tables SET Status = 1 WHERE Table_ID = " + tableID; 
+		        	  try {
+						stmt.executeUpdate(updateTableQuery);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		        }
+		      
 		        JOptionPane.showMessageDialog(null, "Hóa đơn đã được chốt thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 		        model.setRowCount(0);
 		        total = 0; 
@@ -364,6 +397,7 @@ public class table_manage extends JFrame {
 				int k = Integer.parseInt(textpane.getText());
 				ktbtn[k-1]=false;
 				button[k-1].setBackground(re);
+				
 				textpane.setText("");
 			}
 		
@@ -406,72 +440,66 @@ public class table_manage extends JFrame {
 				"11","12","13","14","15",
 				"16","17","18","19","20",
 				"21","22","23","24","25"};
-		
+		connect connector = new connect();
+		Connection conn = connector.connection;
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Table_ID, Status FROM tables");
 		panel.setBorder(BorderFactory.createLineBorder(Color.black));
-		for (int i=0; i<n; i++)
-		{
-			button[i] = new Button(btn[i]);
-			button[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
-			button[i] = new Button(btn[i]);
-			button[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
-			
-			button[i].setBackground(gr);
-			panel.add(button[i]);
-			kt = i;
-			button[i].addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					int kt = Integer.parseInt(e.getActionCommand()) - 1;
-					if (button[kt].getBackground()==gr)
-					{
-						JFrame frame = new JFrame();
-						frame.setTitle("Status");
-						frame.setBounds(550,300,400,200);
-						frame.getContentPane().setLayout(new GridLayout(2,1,10,10));
-						
-						JLabel label = new JLabel("Xác nhận chọn bàn này?");
-						label.setFont(new Font("Times New Roman", Font.BOLD, 25));
-						label.setHorizontalAlignment(SwingConstants.CENTER);
-						frame.getContentPane().add(label);
-						
-						JPanel panel = new JPanel();
-						panel.setLayout(new FlowLayout());
-						
-						JButton btn1 = new JButton("Hủy");
-						JButton btn2 = new JButton("Xác Nhận");
-						btn1.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent h)
-							{
-								frame.setVisible(false);
-							}
-						});
-						
-						btn2.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent h)
-							{
-								textpane.setText(e.getActionCommand());
-								button[kt].setBackground(ye);
-								for (int j=0;j<n;j++)
-									if (button[j].getBackground()==ye && j!=kt)
-									{
-										button[j].setBackground(gr);
-										break;
-									}
-								frame.setVisible(false);
-							}
-						});
-						
-						panel.add(btn1);
-						panel.add(btn2);
-						
-						frame.getContentPane().add(panel);
-						
-						frame.setVisible(true);
-						
-					} else if (!ktbtn[Integer.parseInt(e.getActionCommand())-1]){
-						JOptionPane.showMessageDialog(null,"Bàn này đang có khách!!!");
-					}
-				}
-			});
+		int i = 0;
+
+		while (rs.next() && i < n) {
+		    int tableId = rs.getInt("Table_ID");
+		    int tableStatus = rs.getInt("Status");
+		    button[i] = new Button(btn[i]);
+		    button[i].setFont(new Font("Times New Roman", Font.BOLD, 20));
+		    button[i].setBackground(gr);
+		    panel.add(button[i]);
+		    if(tableStatus == 1) 
+		        button[i].setBackground(Color.RED); 
+		    final int currentIndex = i;
+		    button[i].addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+		            if (button[currentIndex].getBackground() == gr) {
+		                JFrame frame = new JFrame();
+		                frame.setTitle("Status");
+		                frame.setBounds(550,300,400,200);
+		                frame.getContentPane().setLayout(new GridLayout(2,1,10,10));
+		                JLabel label = new JLabel("Xác nhận chọn bàn này?");
+		                label.setFont(new Font("Times New Roman", Font.BOLD, 25));
+		                label.setHorizontalAlignment(SwingConstants.CENTER);
+		                frame.getContentPane().add(label);
+		                JPanel panel = new JPanel();
+		                panel.setLayout(new FlowLayout());
+		                JButton btn1 = new JButton("Hủy");
+		                JButton btn2 = new JButton("Xác Nhận");
+		                btn1.addActionListener(new ActionListener() {
+		                    public void actionPerformed(ActionEvent h) {
+		                        frame.setVisible(false);
+		                    }
+		                });
+		                btn2.addActionListener(new ActionListener() {
+		                    public void actionPerformed(ActionEvent h) {
+		                        textpane.setText(String.valueOf(currentIndex + 1));
+		                        button[currentIndex].setBackground(ye);
+		                        for (int j=0; j<n; j++) {
+		                            if (button[j].getBackground() == ye && j != currentIndex) {
+		                                button[j].setBackground(gr);
+		                                break;
+		                            }
+		                        }
+		                        frame.setVisible(false);
+		                    }
+		                });
+		                panel.add(btn1);
+		                panel.add(btn2);
+		                frame.getContentPane().add(panel);
+		                frame.setVisible(true);
+		            } else {
+		                JOptionPane.showMessageDialog(null, "Bàn này đang có khách!!!");
+		            }
+		        }
+		    });
+		    i++;
 		}
 	}
 }

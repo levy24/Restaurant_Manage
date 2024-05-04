@@ -38,6 +38,24 @@ public class Drink_Cache {
         }
     }
     
+    public static int getCurrentQuantity(int id) throws SQLException {
+        connect connector = new connect();
+        Connection conn = connector.connection;
+        int currentQuantity = 0;
+        if (conn != null) {
+            String sql = "SELECT Quantity FROM food_drink WHERE ID = ?";
+            PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) 
+                currentQuantity = resultSet.getInt("Quantity");
+            resultSet.close();
+            preparedStatement.close();
+            conn.close();
+        }
+        return currentQuantity;
+    }
+    
     public static void addDrink(int id, String name, int price, int quantity) throws SQLException {
         connect connector = new connect();
         Connection conn = connector.connection;
@@ -75,8 +93,8 @@ public class Drink_Cache {
 	    }
 
 	    int index = Drink_ID.indexOf(id);
-	    if (index != -1) { // Kiểm tra xem mục có tồn tại trong danh sách không
-	        Drink_ID.set(index, newId); // Cập nhật thông tin
+	    if (index != -1) {
+	        Drink_ID.set(index, newId);
 	        Drink_Name.set(index, newName);
 	        Drink_Price.set(index, newPrice);
 	        Drink_Quantity.set(index, newQuantity);
@@ -96,12 +114,31 @@ public class Drink_Cache {
 	        conn.close();
 	    }
 	    int index = Drink_ID.indexOf(id);
-        if (index != -1) { // Kiểm tra xem mục có tồn tại trong danh sách không
-            Drink_ID.remove(index); // Xóa khỏi danh sách
+        if (index != -1) { 
+            Drink_ID.remove(index);
             Drink_Name.remove(index);
             Drink_Price.remove(index);
             Drink_Quantity.remove(index);
         }
 	}
 	
+	public static void updateQuantity(int id, int newQuantity) throws SQLException {
+	    connect connector = new connect();
+	    Connection conn = connector.connection;
+	    if (conn != null) {
+	    	int currentQuantity = getCurrentQuantity(id);
+	        String sql = "UPDATE food_drink SET Quantity = ? WHERE ID = ?";
+	        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
+	        preparedStatement.setInt(1, currentQuantity-newQuantity);
+	        preparedStatement.setInt(2, id);
+	        preparedStatement.executeUpdate();
+	        preparedStatement.close();
+	        conn.close();
+	    }
+	    int index = Drink_ID.indexOf(id);
+	    if (index != -1) { 
+	        Drink_Quantity.set(index, newQuantity);
+	    }
 	}
+	
+}

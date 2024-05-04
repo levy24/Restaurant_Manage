@@ -20,7 +20,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
     private JTextField textField;
     private JPasswordField password;
     private boolean isAdmin;
-    public String loggedInUserID;
+    public static String loggedInUserID;
 
     /**
      * Create the application.
@@ -121,7 +121,14 @@ public class dangnhap1 extends JFrame implements ActionListener {
 					e1.printStackTrace();
 				}    
             } else {
-                table_manage vidu = new table_manage();
+            	loggedInUserID = username;
+                table_manage vidu = null;
+				try {
+					vidu = new table_manage();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
                 vidu.show();
             }
         } else {
