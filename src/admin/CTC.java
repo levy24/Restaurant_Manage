@@ -1,17 +1,38 @@
 package admin;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-
-import connectDTB.connect;
-import data_cache.Drink_Cache;
-import data_cache.Food_Cache;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.HashSet;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
+import data_cache.Drink_Cache;
+import data_cache.Food_Cache;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+
 
 public class CTC extends JFrame implements ActionListener {
 
@@ -20,16 +41,16 @@ public class CTC extends JFrame implements ActionListener {
     private static JPanel panel;
     private static DefaultTableModel tableModel;
     
-    public food faFood; 
-    public drinks dr; 
-    public employee ep;
-    public chart chart;
+   
     private JTable tbFood;
     private JTextField txtTim;
     private JTextField txtMa;
     private JTextField txtTen;
     private JTextField txtGia;
     private JComboBox comboBox;
+    public employee ep; 
+    public statistics sttc;
+    
     
     public void GUI() {
     	 frame.setTitle("ADMIN");
@@ -58,6 +79,15 @@ public class CTC extends JFrame implements ActionListener {
          menuBar.add(mnNewMenu);
          
          JMenuItem mntmDoanhthu = new JMenuItem("Doanh thu");
+         mntmDoanhthu.addActionListener(new ActionListener() {
+         	public void actionPerformed(ActionEvent e) {
+         		
+         		if(frame.getContentPane().getComponent(0) != sttc) {
+         			add_panel(sttc);
+         		}
+         	}
+         });
+         
          //mntmDoanhthu.setIcon(new ImageIcon(CTC.class.getResource("/image/Designcontest-Ecommerce-Business-Dollar.24.png")));
          mnNewMenu.add(mntmDoanhthu);
          
@@ -78,19 +108,22 @@ public class CTC extends JFrame implements ActionListener {
          frame.getContentPane().add(panel);
          panel.setLayout(null);
          String[] columns =  {
-      		"Id", "Tên món", "Giá tiền", "Số lượng có sẵn"
+      		"Mã món", "Tên món", "Giá tiền (VND) ", "Số lượng có sẵn"
       	};
          tableModel = new DefaultTableModel();
          tableModel.setColumnIdentifiers(columns);
-         tbFood = new JTable();
+         tbFood = new JTable(tableModel);
+         
+         tbFood.setSurrendersFocusOnKeystroke(true);
          tbFood.setFont(new Font("Times New Roman", Font.PLAIN, 18));
          
          tbFood.setCellSelectionEnabled(true);
          tbFood.setColumnSelectionAllowed(true);
          tbFood.setFillsViewportHeight(true);
-         tbFood.setBackground(new Color(224, 255, 255));
+         tbFood.setBackground(Color.WHITE);
          tbFood.setBounds(800, 10, 600, 600);
          tbFood.setModel(tableModel);
+         
          JScrollPane scrollPane = new JScrollPane(tbFood);
          scrollPane.setSize(700, 500);
          scrollPane.setLocation(830, 100);
@@ -230,7 +263,6 @@ public class CTC extends JFrame implements ActionListener {
                 Object[] newRowData = { maMonInt, tenMon, giaTien, soLuong};
                 tableModel.addRow(newRowData);   
 
-                // Sau khi thêm món, có thể làm sạch các text field
                 txtMa.setText("");
                 txtTen.setText("");
                 txtGia.setText("");
@@ -290,7 +322,7 @@ public class CTC extends JFrame implements ActionListener {
          });
          btntLi.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 15));
          btntLi.setBackground(new Color(245, 255, 250));
-         btntLi.setBounds(154, 620, 188, 39);
+         btntLi.setBounds(281, 620, 188, 39);
          panel.add(btntLi);
          
          JButton btnThot = new JButton("Thoát");
@@ -306,7 +338,7 @@ public class CTC extends JFrame implements ActionListener {
          });
          btnThot.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 15));
          btnThot.setBackground(new Color(245, 255, 250));
-         btnThot.setBounds(429, 620, 188, 39);
+         btnThot.setBounds(508, 620, 188, 39);
          panel.add(btnThot);
          
          comboBox = new JComboBox();
@@ -315,6 +347,12 @@ public class CTC extends JFrame implements ActionListener {
          comboBox.setModel(new DefaultComboBoxModel(new String[] {"Thức ăn", "Đồ uống"}));
          comboBox.setBounds(346, 124, 166, 39);
          panel.add(comboBox);
+         
+         JButton btnLu = new JButton("Lưu");
+         btnLu.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 15));
+         btnLu.setBackground(new Color(245, 255, 250));
+         btnLu.setBounds(50, 620, 188, 39);
+         panel.add(btnLu);
          comboBox.addActionListener(this);
         
          comboBox.addActionListener(new ActionListener() {
@@ -323,39 +361,17 @@ public class CTC extends JFrame implements ActionListener {
           		
           		String selectedOption = comboBox.getSelectedItem().toString();
                 if (selectedOption.equals("Thức ăn")) {
-                	if(tableModel.getRowCount() >0) {
-              			tableModel.setRowCount(0);
-              		}
-                        for (int i = 0; i < Food_Cache.FID.size(); i++) {
-                            Object[] rowData = new Object[4];
-                            rowData[0] = Food_Cache.FID.get(i);
-                            rowData[1] = Food_Cache.FName.get(i);
-                            rowData[2] = Food_Cache.FPrice.get(i);
-                            rowData[3] = Food_Cache.FQuantity.get(i);
-                            tableModel.addRow(rowData);
-                        }
+                	Show_Food();
                 } else if (selectedOption.equals("Đồ uống")) {  
-                	if(tableModel.getRowCount() >0) {
-              			tableModel.setRowCount(0);
-              		}
-                        for (int i = 0; i < Drink_Cache.Drink_ID.size(); i++) {
-                            Object[] rowData = new Object[4];
-                            rowData[0] = Drink_Cache.Drink_ID.get(i);
-                            rowData[1] = Drink_Cache.Drink_Name.get(i);
-                            rowData[2] = Drink_Cache.Drink_Price.get(i);
-                            rowData[3] = Drink_Cache.Drink_Quantity.get(i);
-                            tableModel.addRow(rowData);
-                        }
-                  
+                	Show_Drink();
                 }
           	}
           });
          mntmNhanVien.addActionListener(this);
     }
-    public  CTC()  {
+    public  CTC()   {
     	
     	GUI();
-        
          
     }
     private void add_panel(JPanel panel) {
@@ -376,19 +392,15 @@ public class CTC extends JFrame implements ActionListener {
         switch (command) {
             case "Thực đơn":
             	if (frame.getContentPane().getComponent(0) != panel) {
-            		frame.getContentPane().removeAll();
-                    new CTC();
+                    add_panel(panel);
             	}
                 break;
-            case "Nhân viên":
-                add_panel(dr);
+            case "Nhân viên": 	
+			
+				if (frame.getContentPane().getComponent(0) != ep) {
+            		add_panel(ep);
+				}    
                 break;  
-            case "Doanh thu":
-            	
-                break;
-            case "Xuất thống kê":
-                
-                break;
                
             case "Thoát":
                 System.exit(0);
@@ -396,5 +408,32 @@ public class CTC extends JFrame implements ActionListener {
             default:
                 break;
         }
+    }
+    public static void Show_Food() {
+    	if(tableModel.getRowCount() >0) {
+  			tableModel.setRowCount(0);
+  		}
+            for (int i = 0; i < Food_Cache.FID.size(); i++) {
+                Object[] rowData = new Object[4];
+                rowData[0] = Food_Cache.FID.get(i);
+                rowData[1] = Food_Cache.FName.get(i);
+                rowData[2] = Food_Cache.FPrice.get(i);
+                rowData[3] = Food_Cache.FQuantity.get(i);
+                
+                tableModel.addRow(rowData);
+            }
+    }
+    public static void Show_Drink() {
+    	if(tableModel.getRowCount() >0) {
+  			tableModel.setRowCount(0);
+  		}
+            for (int i = 0; i < Drink_Cache.Drink_ID.size(); i++) {
+                Object[] rowData = new Object[4];
+                rowData[0] = Drink_Cache.Drink_ID.get(i);
+                rowData[1] = Drink_Cache.Drink_Name.get(i);
+                rowData[2] = Drink_Cache.Drink_Price.get(i);
+                rowData[3] = Drink_Cache.Drink_Quantity.get(i);
+                tableModel.addRow(rowData);
+            }
     }
 }

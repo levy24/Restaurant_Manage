@@ -7,12 +7,13 @@ import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import admin.CTC;
-import admin.drinks;
+
 import admin.employee;
-import admin.food;
+import admin.statistics;
 import connectDTB.connect;
-import staff.Bill_Manage;
-import staff.table_manage;
+import data_cache.Drink_Cache;
+import data_cache.Food_Cache;
+import staff.Staff_GUI;
 
 public class dangnhap1 extends JFrame implements ActionListener {
 
@@ -20,8 +21,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
     private JTextField textField;
     private JPasswordField password;
     private boolean isAdmin;
-    public static String loggedInUserID;
-
+    public static String loggedInUserID = "";
     /**
      * Create the application.
      */
@@ -30,11 +30,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
         initialize();
         frame.setVisible(true);
     }
-
-    public dangnhap1() 
-    {}
-
-	/**
+    /**
      * Initialize the contents of the frame.
      */
     private void initialize() {
@@ -44,7 +40,7 @@ public class dangnhap1 extends JFrame implements ActionListener {
         frame.getContentPane().setLayout(null);
 
         JLabel lblNewLabel = new JLabel("New label");
-        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\THAO VY\\eclipse-workspace\\PBL\\src\\image\\logo.png"));
+        lblNewLabel.setIcon(new ImageIcon(dangnhap1.class.getResource("/image/logo.png")));
         lblNewLabel.setBounds(-50, -50, 450, 450);
         frame.getContentPane().add(lblNewLabel);
 
@@ -105,39 +101,32 @@ public class dangnhap1 extends JFrame implements ActionListener {
         boolean isValidLogin = checkLogin(username, inputpassword);
 
         if (isValidLogin) {
-        	loggedInUserID = username;
             // Đóng cửa sổ hiện tại
             frame.dispose();
             if (isAdmin) {
             	CTC window = new CTC();
             	 new connect();
                  try {
-					window.faFood = new food();
-					 window.dr = new drinks();
+                	window.sttc = new statistics();
+					 new Food_Cache();
+					 new Drink_Cache();
 	                 window.ep = new employee();
 	                 window.frame.setVisible(true);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}    
+				}
+                
+//            	adminInterface.setVisible(true);
             } else {
             	loggedInUserID = username;
-                table_manage vidu = null;
-				try {
-					vidu = new table_manage();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-                vidu.show();
+                Staff_GUI st = new Staff_GUI();
+                st.setVisible(true);
+            	
             }
         } else {
             JOptionPane.showMessageDialog(frame, "Tên đăng nhập hoặc mật khẩu không đúng", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    
-    public String getLoggedInUserID() {
-        return loggedInUserID;
     }
 
     public boolean checkLogin(String username, String password) {

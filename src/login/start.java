@@ -13,7 +13,7 @@ public class start extends JFrame implements ActionListener {
     private JButton employeeButton;
     private JButton exit;
     private dangnhap1 dangNhapWindow; 
-    private boolean isAdmin;
+    
 
     public start() {
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,13 +66,11 @@ public class start extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == adminButton) {
-            isAdmin = true;
-            dangNhapWindow = new dangnhap1(isAdmin);
+        if (e.getSource() == adminButton) {          
+            dangNhapWindow = new dangnhap1(true);
             dispose(); //
         } else if (e.getSource() == employeeButton) {
-            isAdmin = false;
-            dangNhapWindow = new dangnhap1(isAdmin); 
+            dangNhapWindow = new dangnhap1(false); 
             dispose(); 
         }
         else if (e.getSource() == exit)

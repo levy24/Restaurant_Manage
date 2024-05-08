@@ -28,7 +28,6 @@ public class Employee_Cache {
                 Emp_ID.add(resultSet.getInt("Emp_ID"));
                 Emp_Name.add(resultSet.getString("Name"));
                 Emp_Phone.add(resultSet.getString("Phone"));
-                System.out.println(resultSet.getString("Phone"));
                 Emp_Address.add(resultSet.getString("Address"));
                 Emp_Position.add(resultSet.getString("Position"));
                 Emp_Pass.add(resultSet.getString("Password"));

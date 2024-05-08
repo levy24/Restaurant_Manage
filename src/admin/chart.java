@@ -28,13 +28,6 @@ public class chart extends JFrame implements ActionListener {
     private static JSpinner end;
     private AbstractButton txtStartDate, txtEndDate;
 
-//    private static Connection getConnection() throws SQLException {
-//        String url = "jdbc:mysql://localhost:3306/data";
-//        String username = "root";
-//        String password = "";
-//        return DriverManager.getConnection(url, username, password);
-//    }
-
     private static CategoryDataset createDataset(String startDate, String endDate, String type) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         connect connector = new connect();
@@ -141,10 +134,10 @@ public class chart extends JFrame implements ActionListener {
         getContentPane().add(chartPanel, BorderLayout.CENTER);
     }
 
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            chart chart = new chart();
-//            chart.setVisible(true);
-//        });
-//    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            chart chart = new chart();
+            chart.setVisible(true);
+        });
+    }
 }
