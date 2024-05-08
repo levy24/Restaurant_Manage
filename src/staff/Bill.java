@@ -379,13 +379,15 @@ public class Bill extends JPanel implements ActionListener {
 	                        connect connector = new connect();
 	        				Connection conn = connector.connection;
 	        				Statement stmt = null;
-//	        				String updateTableQuery = "UPDATE tables SET Status = 0 WHERE Table_ID = " + tableID; 
-//	  		        	  try {
-//	  						stmt.executeUpdate(updateTableQuery);
-//	  		        	  } catch (SQLException e1) {
-//	  						// TODO Auto-generated catch block
-//	  						e1.printStackTrace();
-//	  		        	  }
+	        				String updateTableQuery = "UPDATE tables SET Status = 0 WHERE Table_ID = " + SelectedValue; 
+	  		        	  try {
+	  		        		  stmt = conn.createStatement();
+	  		        		  stmt.executeUpdate(updateTableQuery);
+	  		        		JOptionPane.showMessageDialog(null, "da ok.");
+	  		        	  } catch (SQLException e1) {
+	  						// TODO Auto-generated catch block
+	  						e1.printStackTrace();
+	  		        	  }
 	                    } else {
 	                        JOptionPane.showMessageDialog(null, "Không thể xác nhận thanh toán.");
 	                    }
