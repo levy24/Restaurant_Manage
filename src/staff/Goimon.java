@@ -34,6 +34,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import connectDTB.connect;
 import data_cache.Bill_Cache;
@@ -49,12 +51,15 @@ public class Goimon extends JPanel {
 
 	public int kt;
 	public boolean ktbtn[] = new boolean[25];
-	public Button button[] = new Button[25];
+	public static Button button[] = new Button[25];
 	private JComboBox cbName; 
 	private int id, price;
 	private long total = 0;
 	JTextPane tpTotal;
 	private JTextField txtFind;
+	static Color gr = new Color(0,255,128);
+	static Color re = new Color(220,20,60);
+	static Color ye = new Color(255, 255, 128);
 	/**
 	 * Create the panel.
 	 * @throws SQLException 
@@ -63,9 +68,6 @@ public class Goimon extends JPanel {
 		setBackground(new Color(255, 222, 173));
 		int n = 25;
 		setBounds(0, 0, 1540, 815);
-		Color gr = new Color(0,255,128);
-		Color re = new Color(220,20,60);
-		Color ye = new Color(255, 255, 128);
 		
 		
 		setForeground(Color.BLACK);
@@ -221,6 +223,14 @@ public class Goimon extends JPanel {
 		model.addColumn("Số lượng");
 		model.addColumn("Thành tiền");
 		table.setModel(model);
+		
+		// Lấy đối tượng của cột ID từ model của bảng
+		TableColumnModel columnModel = table.getColumnModel();
+		TableColumn idColumn = columnModel.getColumn(0);
+
+		// Ẩn cột ID
+		columnModel.removeColumn(idColumn);
+
         
         table.setPreferredScrollableViewportSize(new Dimension(600, 400));
         JScrollPane scrollPane = new JScrollPane(table);
@@ -293,11 +303,12 @@ public class Goimon extends JPanel {
 			         JOptionPane.showMessageDialog(null, "Món ăn đã được chọn trước đó. Vui lòng chọn một món khác.", "Thông báo", JOptionPane.WARNING_MESSAGE);
 
 			     } else {
-			         Object[] row = new Object[4];
+			         Object[] row = new Object[5];
 			         row[0] = id; 
 			         row[1] = selectedItem;
 			         row[2] = price; 
 			         row[3] = quantity;
+			         row[4] = quantity*price;
 			         model.addRow(row);
 			         total += price * quantity;
 			     }
@@ -354,11 +365,11 @@ public class Goimon extends JPanel {
 				
 				int tableID = Integer.parseInt(tpTable.getText());
 		        String time = getTimeFromSystem(); 
-		        int empID =  Integer.parseInt(dangnhap1.loggedInUserID);
+		        int empOrder =  Integer.parseInt(dangnhap1.loggedInUserID);
 		        long totalBill = total;
 		        Bill_Cache billCache = new Bill_Cache();
 		        int currentBillID = getCurrentBillID(); 
-		        boolean success = billCache.addBill(currentBillID, time,tableID, empID, totalBill,  0);
+		        boolean success = billCache.addBill(currentBillID, time,tableID, empOrder, totalBill,  0);
 		        if (!success) {
 		            JOptionPane.showMessageDialog(null, "Lỗi khi thêm hóa đơn vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		            return;
@@ -405,8 +416,7 @@ public class Goimon extends JPanel {
 				tpTable.setText("");
 //				Bill bill = new Bill();
 //				
-				Bill.updateTable();
-			}
+				Bill.UpdateDataToComboBox();			}
 		
 		});
 		panel2.add(btnConfirm);
@@ -469,7 +479,7 @@ public class Goimon extends JPanel {
 			    button[i].setBackground(gr);
 			    panel.add(button[i]);
 			    if(tableStatus == 1) 
-			        button[i].setBackground(Color.RED); 
+			        button[i].setBackground(re); 
 			    final int currentIndex = i;
 			    button[i].addActionListener(new ActionListener() {
 			        public void actionPerformed(ActionEvent e) {
@@ -526,9 +536,10 @@ public class Goimon extends JPanel {
 	public int getCurrentBillID() {
 	    int currentBillID = 0;
 	    try {
-	        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/data", "root", "");
+	    	connect connector = new connect();
+			Connection conn = connector.connection;
 	        String sql = "SELECT MAX(bill_ID) FROM bill";
-	        PreparedStatement pstmt = con.prepareStatement(sql);
+	        PreparedStatement pstmt = conn.prepareStatement(sql);
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
 	            currentBillID = rs.getInt(1);
@@ -538,7 +549,7 @@ public class Goimon extends JPanel {
 	        }
 	        rs.close();
 	        pstmt.close();
-	        con.close();
+	        conn.close();
 	    } catch (Exception ex) {
 	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	    }
@@ -564,4 +575,29 @@ public class Goimon extends JPanel {
 	        e.printStackTrace();
 	    }
 	}
+	
+	public static void updateTableStatusInUI() {
+	    try {
+	    	connect connector = new connect();
+			Connection conn = connector.connection;
+	        String sql = "SELECT Table_ID, Status FROM tables";
+	        PreparedStatement pstmt = conn.prepareStatement(sql);
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            int tableId = rs.getInt("Table_ID");
+	            int tableStatus = rs.getInt("Status");
+	            if (tableStatus == 1) {
+	                button[tableId - 1].setBackground(re);
+	            } else {
+	                button[tableId - 1].setBackground(gr);
+	            }
+	        }
+	        rs.close();
+	        pstmt.close();
+	        conn.close();
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
 }

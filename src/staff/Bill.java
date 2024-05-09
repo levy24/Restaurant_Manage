@@ -46,7 +46,7 @@ public class Bill extends JPanel implements ActionListener {
     private static DefaultTableModel model;
     private JButton edit, issue, btnUpdate;
     private static int discountPrice, finalPrice;
-    private JComboBox cbx;
+    private static JComboBox cbx;
     private int SelectedValue;
 	/**
 	 * Create the panel.
@@ -97,11 +97,11 @@ public class Bill extends JPanel implements ActionListener {
 	        cbx.setSize(110, 25);
 	        cbx.setLocation(236, 21);
 	        
-	        
 	        ArrayList<String> list = LoadDataToCombobox();
 	        for(String item : list) {
 	        	cbx.addItem(item.toString());
-	        }        
+	        }
+	               
 	        
 	        JPanel panel_2 = new JPanel();
 	        panel_2.setBackground(Color.WHITE);
@@ -130,6 +130,13 @@ public class Bill extends JPanel implements ActionListener {
 		return list;
     	
     }
+	public static void UpdateDataToComboBox() {
+		cbx.removeAllItems();
+		 ArrayList<String> list = LoadDataToCombobox();
+	        for(String item : list) {
+	        	cbx.addItem(item.toString());
+	        }   
+	}
 
 /*	 public void createPDF(Object[] rowData, Object billID, String[] content, String[] name, String[] price ,String[] quantity, Object Total, String[] total_price, int finalPrice, int discountPrice) {
 
@@ -385,7 +392,7 @@ public class Bill extends JPanel implements ActionListener {
 	  		        	  try {
 	  		        		  stmt = conn.createStatement();
 	  		        		  stmt.executeUpdate(updateTableQuery);
-	  		        		JOptionPane.showMessageDialog(null, "Error");
+	  		        		  Goimon.updateTableStatusInUI();
 	  		        	  } catch (SQLException e1) {
 	  						// TODO Auto-generated catch block
 	  						e1.printStackTrace();
@@ -397,6 +404,7 @@ public class Bill extends JPanel implements ActionListener {
 	                } catch (Exception ex) {
 	                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
+	                UpdateDataToComboBox();
 	            }
 	        });
 
@@ -513,4 +521,5 @@ public class Bill extends JPanel implements ActionListener {
 				}
 			}
 	}
+	    
 }
