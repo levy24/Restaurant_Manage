@@ -6,9 +6,9 @@ import java.awt.*;
 import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import admin.CTC;
+//import admin.CTC;
 
-import admin.employee;
+//import admin.employee;
 import admin.statistics;
 import connectDTB.connect;
 import data_cache.Drink_Cache;
@@ -104,14 +104,14 @@ public class dangnhap1 extends JFrame implements ActionListener {
             // Đóng cửa sổ hiện tại
             frame.dispose();
             if (isAdmin) {
-            	CTC window = new CTC();
+            	//CTC window = new CTC();
             	 new connect();
                  try {
-                	window.sttc = new statistics();
+                	//window.sttc = new statistics();
 					 new Food_Cache();
 					 new Drink_Cache();
-	                 window.ep = new employee();
-	                 window.frame.setVisible(true);
+	                 //window.ep = new employee();
+	                 //window.frame.setVisible(true);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
