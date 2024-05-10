@@ -37,6 +37,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import com.mysql.jdbc.Messages;
+
 import connectDTB.connect;
 import data_cache.Bill_Cache;
 import data_cache.Drink_Cache;
@@ -100,6 +102,11 @@ public class Goimon extends JPanel {
 		cbClassify.setModel(new DefaultComboBoxModel(new String[] {"Khai vị", "Món chính", "Tráng miệng", "Đồ uống"}));
 		cbClassify.setBounds(200, 70, 150, 21);
 		panel2.add(cbClassify);
+
+		cbName = new JComboBox();
+		cbName.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		cbName.setBorder(BorderFactory.createLineBorder(Color.black));
+		populateComboBox(1);
 		
 		JLabel classify = new JLabel("Loại:");
 		classify.setForeground(new Color(75, 0, 130));
@@ -125,10 +132,6 @@ public class Goimon extends JPanel {
 		Table.setBounds(100, 250, 70, 20);
 		panel2.add(Table);
 		
-		cbName = new JComboBox();
-		cbName.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		cbName.setBorder(BorderFactory.createLineBorder(Color.black));
-		cbName.setModel(new DefaultComboBoxModel(new String[] {""}));
 		//Đổ dữ liệu lên chọn món khi có loại 
 		cbClassify.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
@@ -136,29 +139,16 @@ public class Goimon extends JPanel {
 		        String selectedType = (String)cb.getSelectedItem();
 		        
 		        cbName.removeAllItems();
-		        if (selectedType.equals("Khai vị") || selectedType.equals("Món chính") || selectedType.equals("Tráng miệng")) {
-		            int classify = 0;
-		            if (selectedType.equals("Khai vị")) {
-		                classify = 1;
-		            } else if (selectedType.equals("Món chính")) {
-		                classify = 2;
-		            } else if (selectedType.equals("Tráng miệng")) {
+		        int classify = 0;
+		        if (selectedType.equals("Khai vị"))
+		        	classify = 1;
+		        else if (selectedType.equals("Món chính")) 
+		        	classify = 2;
+		        else if (selectedType.equals("Tráng miệng")) 
 		                classify = 3;
-		            }
-
-		            String sql = "SELECT Name FROM food_drink WHERE classify = " + classify;
-		            populateComboBox(sql);
-		        }
-		        else if (selectedType.equals("Đồ uống")) {
-		        	try {
-		    			Drink_Cache drinkCache = new Drink_Cache();
-		    		} catch (SQLException e2) {
-		    			e2.printStackTrace();
-		    		}
-		    		for (String drinkName : Drink_Cache.Drink_Name) {
-		    		    cbName.addItem(drinkName);
-		    		}
-		        }      
+		        else if(selectedType.equals("Đồ uống"))
+		        	classify = 4;
+		        populateComboBox(classify);		        
 		    }
 		});
 		cbName.setBounds(200, 165, 150, 21);
@@ -518,8 +508,18 @@ public class Goimon extends JPanel {
 			                panel.add(btn2);
 			                frame.getContentPane().add(panel);
 			                frame.setVisible(true);
-			            } else {
-			                JOptionPane.showMessageDialog(null, "Bàn này đang có khách!!!");
+			            } else if (button[currentIndex].getBackground() == re) {
+			            	boolean kt = true;
+			            	for (int j=0;j<n;j++)
+			            		if (button[j].getBackground() == ye)
+			            		{
+			            			JOptionPane.showMessageDialog(null, "Bàn này đang có khách!!!");
+			            			kt = false;
+			            		}
+			                if (kt) {
+			                	// Do du lieu xuong lai bang de them mon
+			                	
+			                }
 			            }
 			        }
 			    });
@@ -563,11 +563,11 @@ public class Goimon extends JPanel {
         return formattedTime;
     }
 	
-	private void populateComboBox(String sqlQuery) {
+	private void populateComboBox(int classify) {
 	    connect connector = new connect();
 	    try (Connection conn = connector.connection;
 	         Statement stmt = conn.createStatement();
-	         ResultSet resultSet = stmt.executeQuery(sqlQuery)) {
+	         ResultSet resultSet = stmt.executeQuery("SELECT Name FROM food_drink WHERE classify = '" + classify + "'")) {
 	        while (resultSet.next()) {
 	            cbName.addItem(resultSet.getString("Name"));
 	        }
