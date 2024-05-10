@@ -59,6 +59,7 @@ public class Goimon extends JPanel {
 	private long total = 0;
 	JTextPane tpTotal;
 	private JTextField txtFind;
+	private DefaultTableModel model;
 	static Color gr = new Color(0,255,128);
 	static Color re = new Color(220,20,60);
 	static Color ye = new Color(255, 255, 128);
@@ -206,7 +207,7 @@ public class Goimon extends JPanel {
 
 		JTable table = new JTable();
 
-		DefaultTableModel model = new DefaultTableModel();
+		model = new DefaultTableModel();
 		model.addColumn("ID");
 		model.addColumn("Tên món");
 		model.addColumn("Giá (VND)");
@@ -236,7 +237,6 @@ public class Goimon extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 		        int selectedRowIndex = table.getSelectedRow();
 		        if (selectedRowIndex != -1) {
-		            int itemId = (int) table.getValueAt(selectedRowIndex, 0);
 		            
 		            int choice = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn xóa món này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 		            
@@ -317,7 +317,7 @@ public class Goimon extends JPanel {
 			{
 				int selectedRowIndex = table.getSelectedRow();
 				if (selectedRowIndex != -1) {
-				    String selectedFoodName = (String) table.getValueAt(selectedRowIndex, 1);
+				    String selectedFoodName = (String) table.getValueAt(selectedRowIndex, 0);
 				    String input = JOptionPane.showInputDialog(null, "Nhập số lượng mới cho món " + selectedFoodName + ":", "Sửa số lượng", JOptionPane.PLAIN_MESSAGE);
 				    if (input != null && !input.isEmpty()) {
 				        try {
@@ -327,6 +327,7 @@ public class Goimon extends JPanel {
 				            total -= price * oldQuantity;
 				            total += price * newQuantity;
 				            model.setValueAt(newQuantity, selectedRowIndex, 3);
+				            model.setValueAt(newQuantity*price, selectedRowIndex, 4);
 				            tpTotal.setText(String.valueOf(total));
 				        } catch (NumberFormatException ex) {
 				            JOptionPane.showMessageDialog(null, "Vui lòng nhập một số nguyên hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -359,35 +360,83 @@ public class Goimon extends JPanel {
 		        long totalBill = total;
 		        Bill_Cache billCache = new Bill_Cache();
 		        int currentBillID = getCurrentBillID(); 
-		        boolean success = billCache.addBill(currentBillID, time,tableID, empOrder, totalBill,  0);
-		        if (!success) {
-		            JOptionPane.showMessageDialog(null, "Lỗi khi thêm hóa đơn vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
-		            return;
+		        
+		        int exitingBillID = billCache.getOpenBillIDForTable(tableID);
+		        
+		        //kiểm tra bàn đã có khách ngồi và muốn đặt thêm món 
+		        if(exitingBillID != -1)
+		        {
+		        	for (int i = 0; i < model.getRowCount(); i++) {
+			            int itemID = (int) model.getValueAt(i, 0);
+			            int quantity = (int) model.getValueAt(i, 3);
+			            int price = (int) model.getValueAt(i, 2)*quantity;
+			            
+			            boolean itemExistsInBill = billCache.hasItemInBill(exitingBillID, itemID);
+			            if(itemExistsInBill)
+			            {
+			            	boolean success = billCache.updateOrderDetailQuantity(exitingBillID, itemID, quantity, price);
+			            	if(!success)
+			            	{
+			            		JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật số lương món trong hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			            		return;
+			            	}
+			            	
+			            	boolean success1 = billCache.updateBillTotal(exitingBillID);
+			            	if(!success1)
+			            	{
+			            		JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật số tiền trong hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			            		return;
+			            	}
+			            }
+			            else {
+							boolean success = billCache.addOrderDetail(exitingBillID, itemID, quantity, price);
+							if(!success)
+			            	{
+			            		JOptionPane.showMessageDialog(null, "Lỗi khi thêm chi tiết đơn hàng vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			            		return;
+			            	}
+							
+							boolean success1 = billCache.updateBillTotal(exitingBillID);
+			            	if(!success1)
+			            	{
+			            		JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật số tiền trong hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			            		return;
+			            	}
+						}
+		        	}
 		        }
 
-		        for (int i = 0; i < model.getRowCount(); i++) {
-		            int itemID = (int) model.getValueAt(i, 0);
-		            int quantity = (int) model.getValueAt(i, 3);
-		            int price = (int) model.getValueAt(i, 2)*quantity;
-		            success = billCache.addOrderDetail(currentBillID, itemID, quantity, price);
-		            if (!success) {
-		                JOptionPane.showMessageDialog(null, "Lỗi khi thêm chi tiết đơn hàng vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
-		                return;
-		            }
+		        else {
+		        	boolean success = billCache.addBill(currentBillID, time, tableID, empOrder, totalBill, 0);
+		        	if(!success)
+		        	{
+		        		JOptionPane.showMessageDialog(null, "Lỗi khi thêm hóa đơn vào cơ sở dữ liệu", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        		return;
+		        	}
+		        	
+		        	for (int i =0; i<model.getRowCount(); i++)
+		        	{
+		        		int itemID = (int) model.getValueAt(i, 0);
+		        		int quantity = (int) model.getValueAt(i, 3);
+		        		int price = (int) model.getValueAt(i, 2) *quantity;
+		        		boolean success1 = billCache.addOrderDetail(currentBillID, itemID, quantity, price);
+		        		if(!success1)
+		        		{
+		        			JOptionPane.showMessageDialog(null, "Lỗi khi thêm chi tiết hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        			return;
+		        		}
+		        	}
 		        }
-		        connect connector = new connect();
-				Connection conn = connector.connection;
-				Statement stmt = null;
-				try {
-					stmt = conn.createStatement();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-		        if (success) {
+		        
+		        if (exitingBillID == -1) {
 		        	  String updateTableQuery = "UPDATE tables SET Status = 1 WHERE Table_ID = " + tableID; 
 		        	  try {
-						stmt.executeUpdate(updateTableQuery);
+		        		  connect connector = new connect();
+		                  Connection conn = connector.connection;
+		                  Statement stmt = conn.createStatement();
+		                  stmt.executeUpdate(updateTableQuery);
+		                  stmt.close();
+		                  conn.close();
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -517,8 +566,64 @@ public class Goimon extends JPanel {
 			            			kt = false;
 			            		}
 			                if (kt) {
-			                	// Do du lieu xuong lai bang de them mon
-			                	
+			                	total = 0; 
+			    		        tpTotal.setText("0");
+			                	model.setRowCount(0);
+			                	tpTable.setText("");
+			                	try {
+			                		tpTable.setText(String.valueOf(currentIndex + 1));
+			                		connect connector = new connect();
+			                	    Connection conn = connector.connection;
+			                	    String sql = "SELECT bill_ID FROM bill WHERE Table_ID = ? AND Status = 0";
+			                	    PreparedStatement pstmt = conn.prepareStatement(sql);
+			                	    pstmt.setInt(1, currentIndex + 1);
+			                	    ResultSet resultSet = pstmt.executeQuery();
+
+			                	    // Duyệt qua kết quả truy vấn và lấy thông tin từng món ăn
+			                	    while (resultSet.next()) {
+			                	        int billID = resultSet.getInt("bill_ID");			                	
+				                		JOptionPane.showMessageDialog(null, billID);
+			                	        String sqlItems = "SELECT Item_ID, quantity FROM order_details WHERE bill_id = ?";
+			                	        PreparedStatement pstmtItems = conn.prepareStatement(sqlItems);
+			                	        pstmtItems.setInt(1, billID);
+			                	        ResultSet resultSetItems = pstmtItems.executeQuery();
+
+			                	        // Duyệt qua từng mục trong chi tiết đơn hàng
+			                	        while (resultSetItems.next()) {
+			                	            int itemID = resultSetItems.getInt("Item_ID");
+			                	            int quantity = resultSetItems.getInt("quantity");
+
+			                	            // Thực hiện truy vấn để lấy thông tin món ăn từ cơ sở dữ liệu
+			                	            String sqlFoodDrink = "SELECT Name, price FROM food_drink WHERE ID = ?";
+			                	            PreparedStatement pstmtFoodDrink = conn.prepareStatement(sqlFoodDrink);
+			                	            pstmtFoodDrink.setInt(1, itemID);
+			                	            ResultSet resultSetFoodDrink = pstmtFoodDrink.executeQuery();
+
+			                	            // Nếu có kết quả, thêm thông tin vào bảng hoặc mô hình bảng
+			                	            if (resultSetFoodDrink.next()) {
+			                	                String selectedItem = resultSetFoodDrink.getString("Name");
+			                	                int price = resultSetFoodDrink.getInt("price");
+
+			                	                // Đưa dữ liệu vào bảng hoặc mô hình bảng tại đây
+			                	                Object[] row = new Object[5];
+			                	                row[0] = itemID;
+			                	                row[1] = selectedItem;
+			                	                row[2] = price;
+			                	                row[3] = quantity;
+			                	                row[4] = quantity * price;
+			                	                model.addRow(row);
+			                	                total += price * quantity;
+			                	                tpTotal.setText(String.valueOf(total));
+			                	            }
+			                	        }
+			                	    }
+			                	    
+			            	        rs.close();
+			            	        pstmt.close();
+			            	        conn.close();
+			            	    } catch (Exception ex) {
+			            	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			            	    }
 			                }
 			            }
 			        }
