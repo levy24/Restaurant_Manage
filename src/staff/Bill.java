@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -31,6 +32,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import connectDTB.connect;
+import login.dangnhap1;
+
+import java.awt.Font;
 
 //import org.apache.pdfbox.pdmodel.PDDocument;
 //import org.apache.pdfbox.pdmodel.PDPage;
@@ -47,7 +51,7 @@ public class Bill extends JPanel implements ActionListener {
     private JButton edit, issue, btnUpdate;
     private static int discountPrice, finalPrice;
     private static JComboBox cbx;
-    private int SelectedValue;
+    private int SelectedValue, empCash;
 	/**
 	 * Create the panel.
 	 */
@@ -55,57 +59,72 @@ public class Bill extends JPanel implements ActionListener {
 		 	
 		 	setBounds(0, 0, 1540, 815);
 	        setBorder(new EmptyBorder(5, 5, 5, 5));
+	        setBackground(new Color(255, 222, 173));
 	        setLayout(null);
 
 	        model = new DefaultTableModel();
 	        
 	        panel = new JPanel();
-	        panel.setBackground(Color.WHITE);
+	        panel.setBackground(new Color(255, 250, 240));
 	        panel.setBounds(766, 263, 554, 507);
+	        panel.setBorder(BorderFactory.createLineBorder(Color.black));
 	        add(panel);
 	        panel.setLayout(null);
 	        table = new JTable(model);
 	        JScrollPane scrollPane = new JScrollPane(table);
+	        scrollPane.setBackground(new Color(255, 250, 240));
 	        scrollPane.setBounds(46, 263, 681, 507);
-	        add(scrollPane);
+	        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
+	        
 	        scrollPane.setEnabled(false);
 	        scrollPane.setPreferredSize(new Dimension(600, 400)); 
 	        
 	        JPanel panel_1 = new JPanel();
-	        panel_1.setBounds(1354, 263, 112, 507);
+	        panel_1.setBounds(1354, 263, 112, 215);
+	        panel_1.setBorder(BorderFactory.createLineBorder(Color.black));
 	        add(panel_1);
-	        panel_1.setBackground(Color.WHITE);
+	        panel_1.setBackground(new Color(255, 250, 240));
 	        panel_1.setLayout(null);
 	       
-	        issue = new JButton("Xuất");
+	        issue = new JButton("In");
+	        issue.setForeground(new Color(75, 0, 130));
+	        issue.setBorder(BorderFactory.createLineBorder(Color.black));
+	        issue.setFont(new Font("Times New Roman", Font.BOLD, 25));
 	        issue.addActionListener(this);
 	        
-	        issue.setBounds(16, 33, 90, 54);
+	        issue.setBounds(10, 33, 90, 54);
 	        panel_1.add(issue);
 	        
 	        edit = new JButton("Xem");
-	        edit.setBounds(16, 124, 90, 54);
+	        edit.setForeground(new Color(75, 0, 130));
+	        edit.setBorder(BorderFactory.createLineBorder(Color.black));
+	        edit.setFont(new Font("Times New Roman", Font.BOLD, 25));
+	        edit.setBounds(10, 124, 90, 54);
 	        panel_1.add(edit);
 	        edit.addActionListener(this);
 	        issue.addActionListener(this); 
 	        JLabel lbt = new JLabel("Danh sách bàn chưa thanh toán: ");
-	        lbt.setSize(230, 37);
-	        lbt.setLocation(6, 16);
-	        lbt.setBackground(Color.LIGHT_GRAY);
+	        lbt.setFont(new Font("Times New Roman", Font.BOLD, 20));
+	        lbt.setForeground(new Color(75, 0, 130));
+	        lbt.setSize(280, 37);
+	        lbt.setLocation(20, 16);
 	        cbx = new JComboBox<Object>();
+	        cbx.setForeground(new Color(75, 0, 130));
+	        cbx.setBorder(BorderFactory.createLineBorder(Color.black));
+	        cbx.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 	        cbx.setEditable(true);
-	        cbx.setSize(110, 25);
-	        cbx.setLocation(236, 21);
+	        cbx.setSize(110, 30);
+	        cbx.setLocation(320, 18);
 	        
 	        ArrayList<String> list = LoadDataToCombobox();
 	        for(String item : list) {
 	        	cbx.addItem(item.toString());
 	        }
-	               
 	        
 	        JPanel panel_2 = new JPanel();
-	        panel_2.setBackground(Color.WHITE);
-	        panel_2.setBounds(6, 111, 554, 64);
+	        panel_2.setBackground(new Color(255, 250, 240));
+	        panel_2.setBounds(46, 111, 450, 64);
+	        panel_2.setBorder(BorderFactory.createLineBorder(Color.black));
 	        add(panel_2);
 	        panel_2.add(lbt);
 	        panel_2.add(cbx);
@@ -145,7 +164,7 @@ public class Bill extends JPanel implements ActionListener {
 	            PDPage page = new PDPage();
 	            document.addPage(page);
 	            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-	            PDFont font = null;
+PDFont font = null;
 	            try {
 	                font = PDType0Font.load(document, new File("D:\\PBL\\PBL3\\src\\font\\arial-unicode-ms.ttf"));
 	            } catch (IOException e) {
@@ -207,7 +226,7 @@ public class Bill extends JPanel implements ActionListener {
 	            String[] combineFood = new String[name.length];
 
 	            for (int i = 0; i < name.length; i++) {
-	                combineFood[i] = String.format("%-5s %-23s %-8s", (i + 1) + ".", name[i], price[i]) + String.format("%-2s %10s", quantity[i], total_price[i]);
+					combineFood[i] = String.format("%-5s %-23s %-8s", (i + 1) + ".", name[i], price[i]) + String.format("%-2s %10s", quantity[i], total_price[i]);
 	            }
 	            for (String data : combineFood) {
 	                contentStream.beginText();
@@ -272,7 +291,7 @@ public class Bill extends JPanel implements ActionListener {
 	    }
 */
 	 public static void updateTable() {
-	        try {
+		 try {
 	            Class.forName("com.mysql.jdbc.Driver");
 	            String url = "jdbc:mysql://localhost:3306/data"; 
 	            Connection con = DriverManager.getConnection(url, "root", "");
@@ -305,10 +324,10 @@ public class Bill extends JPanel implements ActionListener {
 	    }
 	    public void editBill(Object[] rowData, Object billID) {
 	    	panel.removeAll();
-	        JTextField[] textFields = new JTextField[6];
+	        JTextField[] textFields = new JTextField[7];
 	        JTextArea textArea = new JTextArea();
 	        
-	        String[] columnNames = {"Mã bill", "Thời gian", "Mã bàn", "Mã NV", "Tổng tiền",  "Trạng thái", "Món"};
+	        String[] columnNames = {"Mã bill", "Thời gian", "Mã bàn", "NV tạo đơn", "NV thanh toán", "Tổng tiền",  "Trạng thái", "Món"};
 	        for (int i = 0; i < columnNames.length; i++) {
 	            JLabel label = new JLabel(columnNames[i] + ":");
 	            label.setBounds(10, 10 + 25 * i, 100, 20);
@@ -370,16 +389,19 @@ public class Bill extends JPanel implements ActionListener {
 	        btnUpdate.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
+	            	
 	            	double dc = Double.parseDouble(discount.getText());
 	                try {
 	                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/data", "root", "");
-	                    String sqlBill = "UPDATE bill SET Status = ?, Total = ? WHERE Bill_ID=?";
+	                    String sqlBill = "UPDATE bill SET Status = ?, Emp_Cash = ?, Total = ? WHERE Bill_ID=?";
 	                    PreparedStatement pstmtBill = con.prepareStatement(sqlBill);
 	                    pstmtBill.setBoolean(1, true);
-	                    discountPrice = (int) ((Integer.parseInt(textFields[4].getText()))*(dc/100));
-	                    finalPrice = (int) ((Integer.parseInt(textFields[4].getText()) - discountPrice));
-	                    pstmtBill.setInt(2, finalPrice);
-	                    pstmtBill.setString(3, textFields[0].getText()); 
+	                    discountPrice = (int) ((Integer.parseInt(textFields[5].getText()))*(dc/100));
+	                    finalPrice = (int) ((Integer.parseInt(textFields[5].getText()) - discountPrice));
+	                    JOptionPane.showMessageDialog(null, finalPrice, "Lỗi", JOptionPane.ERROR_MESSAGE);                    
+	                    pstmtBill.setInt(2, empCash);
+						pstmtBill.setInt(3, finalPrice);
+						pstmtBill.setString(4, textFields[0].getText()); 
 	                    int rowsAffectedBill = pstmtBill.executeUpdate();
 	                    pstmtBill.close();
 	                   
@@ -416,6 +438,20 @@ public class Bill extends JPanel implements ActionListener {
 	    public void actionPerformed(ActionEvent e) {
 	    	SelectedValue = Integer.parseInt((String) cbx.getSelectedItem());
 			if (e.getSource() == edit) {
+				empCash = Integer.parseInt(dangnhap1.getID());
+				try {
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/data", "root", "");
+					String sqlBill = "UPDATE bill SET Emp_Cash = ? WHERE Table_ID = ?";
+					PreparedStatement pstmtBill = con.prepareStatement(sqlBill);
+					pstmtBill.setInt(1, empCash);
+					pstmtBill.setInt(2, SelectedValue);
+					int rowsAffectedBill = pstmtBill.executeUpdate();
+					pstmtBill.close();
+					con.close();
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
 				try {
 					String selectRow = null;
 					Class.forName("com.mysql.jdbc.Driver");
@@ -439,13 +475,17 @@ public class Bill extends JPanel implements ActionListener {
 							}
 						}
 						editBill(rowData, billID);
+						
 					}
 				} catch (Exception e1) {
+					e1.printStackTrace();
+			        JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage(), "Lỗi",
+			                JOptionPane.ERROR_MESSAGE);
 				}
 			}  
 			if (e.getSource() == issue){
 
-				String[] content = { "Mã bill", "Thời gian", "Bàn", "Mã NV" };
+				String[] content = { "Mã bill", "Thời gian", "Bàn", "NV tạo đơn", "NV thanh toán" };
 				String[] name = null;
 				String[] quantity = null;
 				String[] price = null;
@@ -470,8 +510,8 @@ public class Bill extends JPanel implements ActionListener {
 							rowData[i] = rs.getObject(i + 1);
 						}
 						billID = rowData[0];
-						Total = rs.getObject(5);
-						status = rs.getObject(6);
+						Total = rs.getObject(6);
+						status = rs.getObject(7);
 						Component[] components = getComponents();
 						for (Component component : components) {
 							if (component instanceof JTextField) {
@@ -504,11 +544,11 @@ public class Bill extends JPanel implements ActionListener {
 						index++;
 					}
 					if((boolean) status == false) {
-						JOptionPane.showMessageDialog(null, "Ban nay chua duoc thanh toan. " , "Loi:",
+						JOptionPane.showMessageDialog(null, "Bàn này chưa được thanh toán." , "Loi:",
 						JOptionPane.ERROR_MESSAGE);
 					} else {
-//					createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
-//							discountPrice);
+					//	createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
+					//		discountPrice);
 					}
 					rs.close();
 					rs1.close();
