@@ -36,13 +36,13 @@ public class chart extends JFrame implements ActionListener {
             String query = "";
             switch (type) {
                 case "Ngày":
-                    query = "SELECT DATE(time) as time, SUM(total) as total FROM bill WHERE DATE(time) BETWEEN ? AND ? GROUP BY DATE(time)";
+                    query = "SELECT DATE(time) as time, SUM(total) as total FROM bill WHERE DATE(time) BETWEEN ? AND ? AND status = 1 GROUP BY DATE(time)";
                     break;
                 case "Tháng":
-                    query = "SELECT MONTH(time) AS time, SUM(total) AS total FROM bill WHERE time BETWEEN ? AND ? GROUP BY  MONTH(time);";
+                    query = "SELECT MONTH(time) AS time, SUM(total) AS total FROM bill WHERE time BETWEEN ? AND ? AND status = 1 GROUP BY  MONTH(time);";
                     break;
                 case "Năm":
-                    query = "SELECT YEAR(time) AS time, SUM(total) AS total FROM bill WHERE YEAR(time) BETWEEN ? AND ? GROUP BY YEAR(time)";
+                    query = "SELECT YEAR(time) AS time, SUM(total) AS total FROM bill WHERE YEAR(time) BETWEEN ? AND ? AND status = 1 GROUP BY YEAR(time)";
                     break;
             }
 
