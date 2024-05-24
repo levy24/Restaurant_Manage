@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import login.dangnhap1;
-import login.start;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -71,7 +70,7 @@ public class Staff_GUI extends JFrame {
 		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				new dangnhap1(false);
+				new dangnhap1();
 				
 				////////////////
 			}

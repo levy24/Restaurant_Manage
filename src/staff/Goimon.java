@@ -307,7 +307,7 @@ public class Goimon extends JPanel {
 		});
 		panel2.add(btnChoose);
 		
-		JButton btnUpdate = new JButton("Sửa");
+		JButton btnUpdate = new JButton("Thay đổi SL");
 		btnUpdate.setForeground(new Color(75, 0, 130));
 		btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 25));
 		btnUpdate.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -594,6 +594,7 @@ public class Goimon extends JPanel {
 			                	    // Duyệt qua kết quả truy vấn và lấy thông tin từng món ăn
 			                	    while (resultSet.next()) {
 			                	        int billID = resultSet.getInt("bill_ID");			                	
+				                		JOptionPane.showMessageDialog(null, billID);
 			                	        String sqlItems = "SELECT Item_ID, quantity FROM order_details WHERE bill_id = ?";
 			                	        PreparedStatement pstmtItems = conn.prepareStatement(sqlItems);
 			                	        pstmtItems.setInt(1, billID);
@@ -682,16 +683,14 @@ public class Goimon extends JPanel {
 	private void populateComboBox(int classify) {
 	    connect connector = new connect();
 	    try (Connection conn = connector.connection;
-	    	     PreparedStatement pstmt = conn.prepareStatement("SELECT Name FROM food_drink WHERE classify = ? AND Status = 1")) {
-	    	    pstmt.setInt(1, classify);
-	    	    try (ResultSet resultSet = pstmt.executeQuery()) {
-	    	        while (resultSet.next()) {
-	    	            cbName.addItem(resultSet.getString("Name"));
-	    	        }
-	    	    }
-	    	} catch (SQLException e) {
-	    	    e.printStackTrace();
-	    	}
+	         Statement stmt = conn.createStatement();
+	         ResultSet resultSet = stmt.executeQuery("SELECT Name FROM food_drink WHERE classify = '" + classify + "' AND Status = 1")) {
+	        while (resultSet.next()) {
+	            cbName.addItem(resultSet.getString("Name"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	public static void updateTableStatusInUI() {

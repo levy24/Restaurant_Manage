@@ -1,5 +1,6 @@
 package staff;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -36,11 +37,11 @@ import login.dangnhap1;
 
 import java.awt.Font;
 
-//import org.apache.pdfbox.pdmodel.PDDocument;
-//import org.apache.pdfbox.pdmodel.PDPage;
-//import org.apache.pdfbox.pdmodel.PDPageContentStream;
-//import org.apache.pdfbox.pdmodel.font.PDFont;
-//import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 public class Bill extends JPanel implements ActionListener {
 
@@ -49,9 +50,10 @@ public class Bill extends JPanel implements ActionListener {
     private static JTable table;
     private static DefaultTableModel model;
     private JButton edit, issue, btnUpdate;
-    private static int discountPrice, finalPrice;
+    private static int discountPrice = 0, finalPrice = 0;
     private static JComboBox cbx;
     private int SelectedValue, empCash;
+    private static int status = 0;
 	/**
 	 * Create the panel.
 	 */
@@ -102,7 +104,6 @@ public class Bill extends JPanel implements ActionListener {
 	        edit.setBounds(10, 124, 90, 54);
 	        panel_1.add(edit);
 	        edit.addActionListener(this);
-	        issue.addActionListener(this); 
 	        JLabel lbt = new JLabel("Danh sách bàn chưa thanh toán: ");
 	        lbt.setFont(new Font("Times New Roman", Font.BOLD, 20));
 	        lbt.setForeground(new Color(75, 0, 130));
@@ -153,20 +154,20 @@ public class Bill extends JPanel implements ActionListener {
 		cbx.removeAllItems();
 		 ArrayList<String> list = LoadDataToCombobox();
 	        for(String item : list) {
-	        	cbx.addItem(item.toString());
+	        	cbx.addItem(item.toString());  
 	        }   
 	}
 
-/*	 public void createPDF(Object[] rowData, Object billID, String[] content, String[] name, String[] price ,String[] quantity, Object Total, String[] total_price, int finalPrice, int discountPrice) {
-
+	 public void createPDF(Object[] rowData, Object billID, String[] content, String[] name, String[] price ,String[] quantity, Object Total, String[] total_price, int finalPrice, int discountPrice) {
+ 
 	        try {
 	            PDDocument document = new PDDocument();
 	            PDPage page = new PDPage();
 	            document.addPage(page);
 	            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-PDFont font = null;
+	            PDFont font = null;
 	            try {
-	                font = PDType0Font.load(document, new File("D:\\PBL\\PBL3\\src\\font\\arial-unicode-ms.ttf"));
+	                font = PDType0Font.load(document, new File("E:\\JavaDB\\font\\arial-unicode-ms.ttf"));
 	            } catch (IOException e) {
 	            	JOptionPane.showMessageDialog(null, "Not found! " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	            }
@@ -226,7 +227,7 @@ PDFont font = null;
 	            String[] combineFood = new String[name.length];
 
 	            for (int i = 0; i < name.length; i++) {
-					combineFood[i] = String.format("%-5s %-23s %-8s", (i + 1) + ".", name[i], price[i]) + String.format("%-2s %10s", quantity[i], total_price[i]);
+	                combineFood[i] = String.format("%-5s %-23s %-8s", (i + 1) + ".", name[i], price[i]) + String.format("%-2s %10s", quantity[i], total_price[i]);
 	            }
 	            for (String data : combineFood) {
 	                contentStream.beginText();
@@ -289,9 +290,9 @@ PDFont font = null;
 	            JOptionPane.showMessageDialog(null, "Không thể xuất hoá đơn: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        }
 	    }
-*/
+
 	 public static void updateTable() {
-		 try {
+	        try {
 	            Class.forName("com.mysql.jdbc.Driver");
 	            String url = "jdbc:mysql://localhost:3306/data"; 
 	            Connection con = DriverManager.getConnection(url, "root", "");
@@ -361,7 +362,11 @@ PDFont font = null;
 	            	textArea.setBounds(120,10 + 25*i, 200, 50);
 	            	textArea.setBackground(Color.white);
 	            	textArea.setEditable(false);
-	            	panel.add(textArea);
+					JScrollPane scrollPane = new JScrollPane(textArea);
+					scrollPane.setBounds(120, 10 + 25 * i, 200, 50);
+					scrollPane.setEnabled(false);
+					scrollPane.setPreferredSize(new Dimension(200, 100));
+					panel.add(scrollPane, BorderLayout.CENTER);
 	            } else {
 	            	textFields[i] = new JTextField();
 	            	textFields[i].setBounds(120, 10 + 25 * i, 200, 20);
@@ -374,8 +379,8 @@ PDFont font = null;
 	        }
 	        JTextField discount = new JTextField();
 	        JLabel label1 = new JLabel("Giảm giá(%):");
-	        label1.setBounds(10, 220, 100, 20);
-	        discount.setBounds(120,220,200,20);
+	        label1.setBounds(10, 250, 100, 20);
+	        discount.setBounds(120,250,200,20);
 	        discount.setText("0");
 	        
 	        panel.add(label1);
@@ -398,15 +403,16 @@ PDFont font = null;
 	                    pstmtBill.setBoolean(1, true);
 	                    discountPrice = (int) ((Integer.parseInt(textFields[5].getText()))*(dc/100));
 	                    finalPrice = (int) ((Integer.parseInt(textFields[5].getText()) - discountPrice));
-	                    JOptionPane.showMessageDialog(null, finalPrice, "Lỗi", JOptionPane.ERROR_MESSAGE);                    
 	                    pstmtBill.setInt(2, empCash);
 						pstmtBill.setInt(3, finalPrice);
-						pstmtBill.setString(4, textFields[0].getText()); 
+						
+						pstmtBill.setInt(4, Integer.parseInt(textFields[0].getText())); 
 	                    int rowsAffectedBill = pstmtBill.executeUpdate();
 	                    pstmtBill.close();
 	                   
 	                    if (rowsAffectedBill > 0) {
 	                        JOptionPane.showMessageDialog(null, "Xác nhận thanh toán thành công.");
+	                        status = 1;
 	                        connect connector = new connect();
 	        				Connection conn = connector.connection;
 	        				Statement stmt = null;
@@ -436,7 +442,14 @@ PDFont font = null;
 	    }
 	    
 	    public void actionPerformed(ActionEvent e) {
-	    	SelectedValue = Integer.parseInt((String) cbx.getSelectedItem());
+	    	String select = "";
+	    	if(cbx.getSelectedIndex() != -1) {
+	    		select = cbx.getSelectedItem().toString();
+			}
+	    	if(select != "") {
+	    		SelectedValue = Integer.parseInt(select);
+	    	} else return;
+	    	
 			if (e.getSource() == edit) {
 				empCash = Integer.parseInt(dangnhap1.getID());
 				try {
@@ -502,7 +515,7 @@ PDFont font = null;
 					Object billID = null;
 					Object Total = null;
 					Object[] rowData = null;
-					Object status = false; 
+					 
 					if (rs.next()) {
 						selectRow = rs.getString("bill_ID");
 						rowData = new Object[model.getColumnCount()];
@@ -511,7 +524,7 @@ PDFont font = null;
 						}
 						billID = rowData[0];
 						Total = rs.getObject(6);
-						status = rs.getObject(7);
+						
 						Component[] components = getComponents();
 						for (Component component : components) {
 							if (component instanceof JTextField) {
@@ -543,12 +556,12 @@ PDFont font = null;
 						total_price[index] = rs1.getString("total_price");
 						index++;
 					}
-					if((boolean) status == false) {
-						JOptionPane.showMessageDialog(null, "Bàn này chưa được thanh toán." , "Loi:",
+					if(status == 0) {
+						JOptionPane.showMessageDialog(null, "Bàn này chưa được thanh toán." , "Lời nhắc",
 						JOptionPane.ERROR_MESSAGE);
 					} else {
-					//	createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
-					//		discountPrice);
+						createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
+							discountPrice);
 					}
 					rs.close();
 					rs1.close();
