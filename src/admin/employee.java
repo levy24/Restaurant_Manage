@@ -44,12 +44,13 @@ public  class employee extends JPanel {
 		setLayout(null);
 		setSize(1540, 815);
 		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(new Color(255, 222, 173));
 		panel_3.setBounds(0, 0, 1530, 815);
 		add(panel_3);
 		panel_3.setLayout(null);
 		
 		JLabel lbl1 = new JLabel("Quản lý nhân viên");
-		lbl1.setBounds(30, 71, 584, 70);
+		lbl1.setBounds(44, 68, 501, 70);
 		panel_3.add(lbl1);
 		lbl1.setBackground(Color.LIGHT_GRAY);
 		lbl1.setFont(new Font("Times New Roman", Font.BOLD, 60));
@@ -68,6 +69,7 @@ public  class employee extends JPanel {
 		panel_3.add(scrollPane);
 		
 		JPanel panel = new JPanel();
+		panel.setBackground(new Color(244, 164, 96));
 		panel.setBounds(581, 190, 432, 48);
 		panel_3.add(panel);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -83,6 +85,7 @@ public  class employee extends JPanel {
 		textField.setColumns(20);
 		
 		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(new Color(244, 164, 96));
 		panel_1.setBounds(581, 248, 432, 48);
 		panel_3.add(panel_1);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -97,13 +100,8 @@ public  class employee extends JPanel {
 		textField_1.setColumns(20);
 		panel_1.add(textField_1);
 		
-		JLabel lblNewLabel_1 = new JLabel("Thông tin mới");
-		lblNewLabel_1.setBounds(783, 110, 440, 55);
-		panel_3.add(lblNewLabel_1);
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 25));
-		
 		JPanel panel_1_1 = new JPanel();
+		panel_1_1.setBackground(new Color(244, 164, 96));
 		panel_1_1.setBounds(581, 314, 432, 48);
 		panel_3.add(panel_1_1);
 		panel_1_1.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 10));
@@ -119,6 +117,7 @@ public  class employee extends JPanel {
 		panel_1_1.add(textField_2);
 		
 		JPanel panel_1_1_1 = new JPanel();
+		panel_1_1_1.setBackground(new Color(244, 164, 96));
 		panel_1_1_1.setBounds(1023, 190, 432, 48);
 		panel_3.add(panel_1_1_1);
 		panel_1_1_1.setLayout(null);
@@ -136,6 +135,7 @@ public  class employee extends JPanel {
 		panel_1_1_1.add(textField_3);
 		
 		JPanel panel_1_1_2 = new JPanel();
+		panel_1_1_2.setBackground(new Color(244, 164, 96));
 		panel_1_1_2.setBounds(1023, 314, 432, 48);
 		panel_3.add(panel_1_1_2);
 		panel_1_1_2.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 10));
@@ -151,6 +151,7 @@ public  class employee extends JPanel {
 		panel_1_1_2.add(textField_4);
 		
 		JPanel panel_1_1_3 = new JPanel();
+		panel_1_1_3.setBackground(new Color(244, 164, 96));
 		panel_1_1_3.setBounds(1023, 248, 432, 48);
 		panel_3.add(panel_1_1_3);
 		panel_1_1_3.setLayout(null);
@@ -167,7 +168,8 @@ public  class employee extends JPanel {
 		panel_1_1_3.add(comboBox);
 		
 		JButton btnNewButton = new JButton("Thêm mới");
-		btnNewButton.setBounds(83, 248, 168, 48);
+//		btnNewButton.setIcon(new ImageIcon(employee.class.getResource("/image/Hopstarter-Button-Button-Add.16.png")));
+		btnNewButton.setBounds(135, 248, 132, 48);
 		panel_3.add(btnNewButton);
 		btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		
@@ -216,7 +218,7 @@ public  class employee extends JPanel {
 		});
 
 		JPanel panel_2 = new JPanel();
-		panel_2.setBounds(30, 190, 541, 48);
+		panel_2.setBounds(57, 190, 488, 48);
 		panel_3.add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		
@@ -233,15 +235,14 @@ public  class employee extends JPanel {
 		JButton btnNewButton_1 = new JButton("Tìm ");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(e.getSource() == btnNewButton_1) {
-					Chuc_Nang.Tim_NV(textField_5.getText());
-				}
+				
 			}
 		});
 		panel_2.add(btnNewButton_1);
 		btnNewButton_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		
 		JButton btnXa = new JButton("Xóa");
+//		btnXa.setIcon(new ImageIcon(employee.class.getResource("/image/Hopstarter-Button-Button-Delete.16.png")));
 		btnXa.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		        try {
@@ -258,12 +259,13 @@ public  class employee extends JPanel {
 		    }
 		});
 
-		btnXa.setBounds(83, 314, 168, 48);
+		btnXa.setBounds(135, 314, 132, 48);
 		panel_3.add(btnXa);
 		btnXa.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		
 		JButton btnSa = new JButton("Sửa");
-		btnSa.setBounds(340, 248, 168, 48);
+//		btnSa.setIcon(new ImageIcon(employee.class.getResource("/image/Oxygen-Icons.org-Oxygen-Actions-document-edit.16.png")));
+		btnSa.setBounds(318, 248, 126, 48);
 		panel_3.add(btnSa);
 		btnSa.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		new Employee_Cache();
@@ -286,6 +288,7 @@ public  class employee extends JPanel {
 		table.setModel(model);
 		
 		JButton btntLi = new JButton("Đặt lại");
+//		btntLi.setIcon(new ImageIcon(employee.class.getResource("/image/Aniket-Suvarna-Box-Regular-Bx-reset.16.png")));
 		btntLi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == btntLi) {
@@ -299,8 +302,21 @@ public  class employee extends JPanel {
 			}
 		});
 		btntLi.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		btntLi.setBounds(340, 314, 168, 48);
+		btntLi.setBounds(318, 314, 126, 48);
 		panel_3.add(btntLi);
+		
+		JPanel panel_4 = new JPanel();
+		panel_4.setBackground(new Color(250, 250, 210));
+		panel_4.setBounds(555, 105, 923, 278);
+		panel_3.add(panel_4);
+		panel_4.setLayout(null);
+		
+		JLabel lblNewLabel_1 = new JLabel("Thông tin mới");
+		lblNewLabel_1.setBackground(new Color(244, 164, 96));
+		lblNewLabel_1.setBounds(372, 24, 178, 43);
+		panel_4.add(lblNewLabel_1);
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 25));
 		
 	}
 	public static void Set_TableModel(Object[] data) {
@@ -323,5 +339,3 @@ public  class employee extends JPanel {
 	        }
 	}
 }
-
-
