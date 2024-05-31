@@ -63,6 +63,7 @@ public class Goimon extends JPanel {
 	static Color gr = new Color(0,255,128);
 	static Color re = new Color(220,20,60);
 	static Color ye = new Color(255, 255, 128);
+	private int billID = -1;
 	/**
 	 * Create the panel.
 	 * @throws SQLException 
@@ -234,25 +235,44 @@ public class Goimon extends JPanel {
 		btnDelete.setFont(new Font("Times New Roman", Font.BOLD, 25));
 		btnDelete.setBounds(570, 115, 150, 40);
 		btnDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		    public void actionPerformed(ActionEvent e) {
 		        int selectedRowIndex = table.getSelectedRow();
 		        if (selectedRowIndex != -1) {
-		            
-		            int choice = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn xóa món này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
-		            
-		            if (choice == JOptionPane.YES_OPTION) {
-		                DefaultTableModel model = (DefaultTableModel) table.getModel();
-		                int quantity = (int) table.getValueAt(selectedRowIndex, 3);
-		                int price = (int) table.getValueAt(selectedRowIndex, 2); 
-		                total -= price * quantity; 
-		                model.removeRow(selectedRowIndex);
-		                tpTotal.setText(String.valueOf(total));
+		        	int foodIDColumnIndex = 0; 
+		            int foodID = (int) table.getModel().getValueAt(selectedRowIndex, foodIDColumnIndex);
+		            try {
+		                connect connector = new connect();
+		                Connection conn = connector.connection;
+		                String selectQuery = "SELECT * FROM order_details WHERE Item_ID = ? AND bill_ID = ?";
+		                PreparedStatement selectStmt = conn.prepareStatement(selectQuery);
+		                selectStmt.setInt(1, foodID);
+		                selectStmt.setInt(2, billID); 
+		                ResultSet resultSet = selectStmt.executeQuery();
+
+		                if (resultSet.next()) {
+		                    JOptionPane.showMessageDialog(null, "Món ăn này đã được đặt hàng, không thể xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+		                } else {
+		                    int choice = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn xóa món này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+		                    if (choice == JOptionPane.YES_OPTION) {
+		                        DefaultTableModel model = (DefaultTableModel) table.getModel();
+		                        int quantity = (int) table.getValueAt(selectedRowIndex, 3);
+		                        int price = (int) table.getValueAt(selectedRowIndex, 2);
+		                        total -= price * quantity;
+		                        model.removeRow(selectedRowIndex);
+		                        tpTotal.setText(String.valueOf(total));
+		                    }
+		                }
+		                conn.close();
+		            } catch (SQLException ex) {
+		                ex.printStackTrace();
+		                JOptionPane.showMessageDialog(null, "Xảy ra lỗi khi kiểm tra món ăn.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		            }
 		        } else {
 		            JOptionPane.showMessageDialog(null, "Vui lòng chọn một món để xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
 		        }
 		    }
 		});
+
 		panel2.add(btnDelete);
 		
 		JButton btnChoose = new JButton("Chọn món");
@@ -593,8 +613,7 @@ public class Goimon extends JPanel {
 
 			                	    // Duyệt qua kết quả truy vấn và lấy thông tin từng món ăn
 			                	    while (resultSet.next()) {
-			                	        int billID = resultSet.getInt("bill_ID");			                	
-				                		JOptionPane.showMessageDialog(null, billID);
+			                	        billID = resultSet.getInt("bill_ID");			                	
 			                	        String sqlItems = "SELECT Item_ID, quantity FROM order_details WHERE bill_id = ?";
 			                	        PreparedStatement pstmtItems = conn.prepareStatement(sqlItems);
 			                	        pstmtItems.setInt(1, billID);
@@ -611,12 +630,10 @@ public class Goimon extends JPanel {
 			                	            pstmtFoodDrink.setInt(1, itemID);
 			                	            ResultSet resultSetFoodDrink = pstmtFoodDrink.executeQuery();
 
-			                	            // Nếu có kết quả, thêm thông tin vào bảng hoặc mô hình bảng
 			                	            if (resultSetFoodDrink.next()) {
 			                	                String selectedItem = resultSetFoodDrink.getString("Name");
 			                	                int price = resultSetFoodDrink.getInt("price");
 
-			                	                // Đưa dữ liệu vào bảng hoặc mô hình bảng tại đây
 			                	                Object[] row = new Object[5];
 			                	                row[0] = itemID;
 			                	                row[1] = selectedItem;
