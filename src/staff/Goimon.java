@@ -2,10 +2,13 @@ package staff;
 
 import java.awt.Button;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -32,13 +35,13 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import com.mysql.jdbc.Messages;
-
 import connectDTB.connect;
 import data_cache.Bill_Cache;
 import data_cache.Drink_Cache;
@@ -46,6 +49,8 @@ import data_cache.Food_Cache;
 import login.dangnhap1;
 import staff.Bill;
 import javax.swing.JTextField;
+import javax.swing.ImageIcon;
+import javax.swing.border.LineBorder;
 
 public class Goimon extends JPanel {
 
@@ -56,6 +61,7 @@ public class Goimon extends JPanel {
 	public static Button button[] = new Button[25];
 	private JComboBox cbName; 
 	private int id, price;
+	private String donVi;
 	private long total = 0;
 	JTextPane tpTotal;
 	private JTextField txtFind;
@@ -64,6 +70,8 @@ public class Goimon extends JPanel {
 	static Color re = new Color(220,20,60);
 	static Color ye = new Color(255, 255, 128);
 	private int billID = -1;
+	private JTextField txtGia;
+	private JTextField txtDonVi;
 	/**
 	 * Create the panel.
 	 * @throws SQLException 
@@ -81,57 +89,50 @@ public class Goimon extends JPanel {
 		for (int i=0;i<n;i++)
 			ktbtn[i] = true;
 		
-		JLabel lblNewLabel = new JLabel("ORDER");
-		lblNewLabel.setForeground(new Color(75, 0, 130));
-		lblNewLabel.setBackground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 30));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(0, 0, 1550, 50);
-		add(lblNewLabel);
-		lblNewLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-		
 
 		JPanel panel2 = new JPanel();
 		panel2.setBackground(new Color(255, 250, 240));
-		panel2.setBounds(700, 100, 825, 650);	
+		panel2.setBounds(699, 100, 810, 650);	
 		add(panel2);
 		panel2.setLayout(null);
 		panel2.setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		JComboBox cbClassify = new JComboBox();
+		cbClassify.setForeground(new Color(75, 0, 130));
 		cbClassify.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		cbClassify.setBorder(BorderFactory.createLineBorder(Color.black));
+		cbClassify.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
 		cbClassify.setModel(new DefaultComboBoxModel(new String[] {"Khai vị", "Món chính", "Tráng miệng", "Đồ uống"}));
-		cbClassify.setBounds(200, 70, 150, 21);
+		cbClassify.setBounds(212, 85, 198, 25);
 		panel2.add(cbClassify);
 
 		cbName = new JComboBox();
+		cbName.setForeground(new Color(75, 0, 130));
 		cbName.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		cbName.setBorder(BorderFactory.createLineBorder(Color.black));
+		cbName.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
 		populateComboBox(1);
 		
 		JLabel classify = new JLabel("Loại:");
 		classify.setForeground(new Color(75, 0, 130));
 		classify.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		classify.setBounds(100, 70, 45, 20);
+		classify.setBounds(78, 87, 45, 20);
 		panel2.add(classify);
 		
 		JLabel Name = new JLabel("Chọn món:");
 		Name.setForeground(new Color(75, 0, 130));
 		Name.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		Name.setBounds(100, 165, 90, 20);
+		Name.setBounds(77, 134, 90, 20);
 		panel2.add(Name);
 		
 		JLabel Quantity = new JLabel("Số lượng:");
 		Quantity.setForeground(new Color(75, 0, 130));
 		Quantity.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		Quantity.setBounds(100, 210, 90, 20);
+		Quantity.setBounds(77, 233, 90, 20);
 		panel2.add(Quantity);
 		
 		JLabel Table = new JLabel("Số bàn:");
 		Table.setForeground(new Color(75, 0, 130));
 		Table.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		Table.setBounds(100, 250, 70, 20);
+		Table.setBounds(77, 275, 73, 20);
 		panel2.add(Table);
 		
 		//Đổ dữ liệu lên chọn món khi có loại 
@@ -153,26 +154,30 @@ public class Goimon extends JPanel {
 		        populateComboBox(classify);		        
 		    }
 		});
-		cbName.setBounds(200, 165, 150, 21);
+		cbName.setBounds(212, 132, 198, 25);
 		panel2.add(cbName);
 		
 		JLabel Find = new JLabel("Tìm kiếm:");
 		Find.setForeground(new Color(75, 0, 130));
 		Find.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		Find.setBounds(100, 115, 90, 20);
+		Find.setBounds(78, 38, 90, 20);
 		panel2.add(Find);
 		
 		txtFind = new JTextField();
+		txtFind.setForeground(new Color(75, 0, 130));
 		txtFind.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		txtFind.setBorder(BorderFactory.createLineBorder(Color.black));
-		txtFind.setBounds(200, 118, 150, 21);
+		txtFind.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
+		txtFind.setBounds(212, 35, 198, 25);
 		panel2.add(txtFind);
 		
-		JButton btnSearch = new JButton("Tìm");
+		JButton btnSearch = new JButton("");
+		btnSearch.setBackground(new Color(224, 255, 255));
+	//	btnSearch.setIcon(new ImageIcon(Goimon.class.getResource("/image/Ampeross-Qetto-2-Search.32.png")));
 		btnSearch.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		btnSearch.setBorder(BorderFactory.createLineBorder(Color.black));
+		btnSearch.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		btnSearch.setForeground(new Color(75, 0, 130));
-		btnSearch.setBounds(370, 117, 85, 21);
+		btnSearch.setBounds(415, 38, 35, 21);
+		btnSearch.setBorder(new RoundedBorder(20));
 		btnSearch.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	cbName.removeAllItems();
@@ -190,19 +195,43 @@ public class Goimon extends JPanel {
 		});
 		panel2.add(btnSearch);
 		
+		cbName.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String selectedItem = (String) cbName.getSelectedItem();
+		        connect connector = new connect();
+			     try (Connection conn = connector.connection;
+			          Statement stmt = conn.createStatement();
+			          ResultSet resultSet = stmt.executeQuery("SELECT ID, Price, DonVi FROM food_drink WHERE Name = '" + selectedItem + "'")) {
+			         if (resultSet.next()) {
+			             id = resultSet.getInt("ID");
+			             price = resultSet.getInt("Price");
+			             txtGia.setText(String.valueOf(price));
+			             donVi = resultSet.getString("DonVi");
+			             txtDonVi.setText(String.valueOf(donVi));
+			         }
+			     } catch (SQLException e1) {
+			         e1.printStackTrace();
+			     }
+		    }
+		});
+
+		
 		JSpinner spinner = new JSpinner();
+		spinner.setForeground(new Color(75, 0, 130));
 		spinner.setModel(new SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
 		spinner.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		spinner.setBorder(BorderFactory.createLineBorder(Color.black));
-		spinner.setBounds(200, 210, 50, 25);
+		spinner.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
+		spinner.setBounds(212, 232, 50, 25);
 		panel2.add(spinner);
 		
 		JTextPane tpTable = new JTextPane();
+		tpTable.setForeground(new Color(75, 0, 130));
 		tpTable.setBackground(new Color(255, 255, 255));
-		tpTable.setBorder(BorderFactory.createLineBorder(Color.black));
+		tpTable.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
 		tpTable.setEditable(false);
 		tpTable.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		tpTable.setBounds(200, 250, 50, 25);
+		tpTable.setBounds(212, 275, 50, 25);
 		panel2.add(tpTable);
 		
 
@@ -213,6 +242,7 @@ public class Goimon extends JPanel {
 		model.addColumn("Tên món");
 		model.addColumn("Giá (VND)");
 		model.addColumn("Số lượng");
+		model.addColumn("Đơn vị tính");
 		model.addColumn("Thành tiền");
 		table.setModel(model);
 		
@@ -226,14 +256,16 @@ public class Goimon extends JPanel {
         
         table.setPreferredScrollableViewportSize(new Dimension(600, 400));
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 320, 800, 250);
+        scrollPane.setBounds(10, 320, 777, 250);
 		panel2.add(scrollPane);
 		
 		JButton btnDelete = new JButton("Xóa món");
+		btnDelete.setBackground(new Color(224, 255, 255));
 		btnDelete.setForeground(new Color(75, 0, 130));
-		btnDelete.setBorder(BorderFactory.createLineBorder(Color.black));
+		btnDelete.setBorder(null);
 		btnDelete.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		btnDelete.setBounds(570, 115, 150, 40);
+		btnDelete.setBounds(570, 99, 150, 40);
+		btnDelete.setBorder(new RoundedBorder(20));
 		btnDelete.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		        int selectedRowIndex = table.getSelectedRow();
@@ -276,29 +308,17 @@ public class Goimon extends JPanel {
 		panel2.add(btnDelete);
 		
 		JButton btnChoose = new JButton("Chọn món");
+		btnChoose.setBackground(new Color(224, 255, 255));
 		btnChoose.setForeground(new Color(75, 0, 130));
-		btnChoose.setBorder(BorderFactory.createLineBorder(Color.black));
+		btnChoose.setBorder(null);
 		btnChoose.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		btnChoose.setBounds(570, 180, 150, 40);
+		btnChoose.setBounds(570, 160, 150, 40);
+		btnChoose.setBorder(new RoundedBorder(20));
 		btnChoose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				 String selectedItem = (String) cbName.getSelectedItem(); 
 			     int quantity = (int) spinner.getValue(); 
-
-			     id = -1;
-			     price = -1;
-			     connect connector = new connect();
-			     try (Connection conn = connector.connection;
-			          Statement stmt = conn.createStatement();
-			          ResultSet resultSet = stmt.executeQuery("SELECT ID, Price FROM food_drink WHERE Name = '" + selectedItem + "'")) {
-			         if (resultSet.next()) {
-			             id = resultSet.getInt("ID");
-			             price = resultSet.getInt("Price");
-			         }
-			     } catch (SQLException e1) {
-			         e1.printStackTrace();
-			     }
 			     
 			     //kiểm tra món ăn đã được chọn trước đó hay chưa
 			     boolean itemExists = false;
@@ -310,15 +330,57 @@ public class Goimon extends JPanel {
 			         }
 			     }
 			     if (itemExists) {
-			         JOptionPane.showMessageDialog(null, "Món ăn đã được chọn trước đó. Vui lòng chọn một món khác.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			    	    int option = JOptionPane.showOptionDialog(null,
+			    	        "Món ăn đã được chọn trước đó. Bạn muốn thay đổi số lượng?",
+			    	        "Thông báo",
+			    	        JOptionPane.YES_NO_OPTION,
+			    	        JOptionPane.QUESTION_MESSAGE,
+			    	        null,
+			    	        new String[]{"Thay đổi số lượng", "Hủy"},
+			    	        "Thay đổi số lượng");
 
-			     } else {
-			         Object[] row = new Object[5];
+			    	    if (option == JOptionPane.YES_OPTION) {
+			    	        // Xử lý sự kiện thay đổi số lượng
+			    	        String selectedItem1 = (String) cbName.getSelectedItem();
+			    	        if (selectedItem1 != null && !selectedItem1.isEmpty()) {
+			    	            String input = JOptionPane.showInputDialog(null, "Nhập số lượng mới cho món " + selectedItem1 + ":", "Sửa số lượng", JOptionPane.PLAIN_MESSAGE);
+			    	            if (input != null && !input.isEmpty()) {
+			    	                try {
+			    	                    // Tìm kiếm chỉ số của món ăn trong table để cập nhật số lượng
+			    	                    int rowCount = table.getRowCount();
+			    	                    for (int i = 0; i < rowCount; i++) {
+			    	                        if (selectedItem1.equals(table.getValueAt(i, 0))) {
+			    	                            int oldQuantity = (int) model.getValueAt(i, 3);
+			    	                            int price = (int) model.getValueAt(i, 2);
+			    	                            int newQuantity = Integer.parseInt(input);
+			    	                            total -= price * oldQuantity;
+			    	                            total += price * newQuantity;
+			    	                            model.setValueAt(newQuantity, i, 3);
+			    	                            model.setValueAt(newQuantity * price, i, 5);
+			    	                            tpTotal.setText(String.valueOf(total));
+			    	                            break;
+			    	                        }
+			    	                    }
+			    	                } catch (NumberFormatException ex) {
+			    	                    JOptionPane.showMessageDialog(null, "Vui lòng nhập một số nguyên hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			    	                }
+			    	            }
+			    	        } else {
+			    	            JOptionPane.showMessageDialog(null, "Vui lòng chọn một món ăn để có thể sửa số lượng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			    	        }
+			    	    }
+			    	}
+
+
+
+			     else {
+			         Object[] row = new Object[6];
 			         row[0] = id; 
 			         row[1] = selectedItem;
 			         row[2] = price; 
 			         row[3] = quantity;
-			         row[4] = quantity*price;
+			         row[4] = donVi;
+			         row[5] = quantity*price;
 			         model.addRow(row);
 			         total += price * quantity;
 			     }
@@ -327,45 +389,47 @@ public class Goimon extends JPanel {
 		});
 		panel2.add(btnChoose);
 		
-		JButton btnUpdate = new JButton("Thay đổi SL");
-		btnUpdate.setForeground(new Color(75, 0, 130));
-		btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		btnUpdate.setBorder(BorderFactory.createLineBorder(Color.black));
-		btnUpdate.setBounds(570, 50, 150, 40);
-		btnUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				int selectedRowIndex = table.getSelectedRow();
-				if (selectedRowIndex != -1) {
-				    String selectedFoodName = (String) table.getValueAt(selectedRowIndex, 0);
-				    String input = JOptionPane.showInputDialog(null, "Nhập số lượng mới cho món " + selectedFoodName + ":", "Sửa số lượng", JOptionPane.PLAIN_MESSAGE);
-				    if (input != null && !input.isEmpty()) {
-				        try {
-				            int oldQuantity = (int) model.getValueAt(selectedRowIndex, 3);
-				            int price = (int) model.getValueAt(selectedRowIndex, 2);
-				            int newQuantity = Integer.parseInt(input);
-				            total -= price * oldQuantity;
-				            total += price * newQuantity;
-				            model.setValueAt(newQuantity, selectedRowIndex, 3);
-				            model.setValueAt(newQuantity*price, selectedRowIndex, 4);
-				            tpTotal.setText(String.valueOf(total));
-				        } catch (NumberFormatException ex) {
-				            JOptionPane.showMessageDialog(null, "Vui lòng nhập một số nguyên hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-				        }
-				    }
-				} else {
-				    JOptionPane.showMessageDialog(null, "Vui lòng chọn một món ăn để có thể sửa số lượng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-				}
-
-			}
-		});
-		panel2.add(btnUpdate);
+//		btnUpdate = new JButton("Thay đổi SL");
+//		btnUpdate.setForeground(new Color(75, 0, 130));
+//		btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 25));
+//		btnUpdate.setBorder(BorderFactory.createLineBorder(Color.black));
+//		btnUpdate.setBounds(570, 50, 150, 40);
+//		btnUpdate.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				int selectedRowIndex = table.getSelectedRow();
+//				if (selectedRowIndex != -1) {
+//				    String selectedFoodName = (String) table.getValueAt(selectedRowIndex, 0);
+//				    String input = JOptionPane.showInputDialog(null, "Nhập số lượng mới cho món " + selectedFoodName + ":", "Sửa số lượng", JOptionPane.PLAIN_MESSAGE);
+//				    if (input != null && !input.isEmpty()) {
+//				        try {
+//				            int oldQuantity = (int) model.getValueAt(selectedRowIndex, 3);
+//				            int price = (int) model.getValueAt(selectedRowIndex, 2);
+//				            int newQuantity = Integer.parseInt(input);
+//				            total -= price * oldQuantity;
+//				            total += price * newQuantity;
+//				            model.setValueAt(newQuantity, selectedRowIndex, 3);
+//				            model.setValueAt(newQuantity*price, selectedRowIndex, 4);
+//				            tpTotal.setText(String.valueOf(total));
+//				        } catch (NumberFormatException ex) {
+//				            JOptionPane.showMessageDialog(null, "Vui lòng nhập một số nguyên hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//				        }
+//				    }
+//				} else {
+//				    JOptionPane.showMessageDialog(null, "Vui lòng chọn một món ăn để có thể sửa số lượng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//				}
+//
+//			}
+//		});
+//		panel2.add(btnUpdate);
 	
 		JButton btnConfirm = new JButton("Chốt đơn");
+		btnConfirm.setBackground(new Color(224, 255, 255));
 		btnConfirm.setForeground(new Color(75, 0, 130));
-		btnConfirm.setBorder(BorderFactory.createLineBorder(Color.black));
+		btnConfirm.setBorder(null);
 		btnConfirm.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		btnConfirm.setBounds(570, 250, 150, 40);
+		btnConfirm.setBounds(570, 221, 150, 40);
+		btnConfirm.setBorder(new RoundedBorder(20));
 		btnConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -496,21 +560,21 @@ public class Goimon extends JPanel {
 		Tien.setForeground(new Color(75, 0, 130));
 		Tien.setFont(new Font("Times New Roman", Font.BOLD, 22));
 		Tien.setHorizontalAlignment(SwingConstants.CENTER);
-		Tien.setBounds(220, 600, 100, 25);
+		Tien.setBounds(461, 600, 100, 25);
 		panel2.add(Tien);
 		
 		tpTotal = new JTextPane();
 		tpTotal.setForeground(new Color(75, 0, 130));
 		tpTotal.setEditable(false);
-		tpTotal.setBorder(BorderFactory.createLineBorder(Color.black));
+		tpTotal.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
 		tpTotal.setFont(new Font("Times New Roman", Font.PLAIN, 22));
-		tpTotal.setBounds(350, 600, 150, 25);
+		tpTotal.setBounds(570, 600, 150, 25);
 		panel2.add(tpTotal);
 		
 		JLabel lblNewLabel_2 = new JLabel("GỌI MÓN");
 		lblNewLabel_2.setForeground(new Color(75, 0, 130));
-		lblNewLabel_2.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		lblNewLabel_2.setBounds(1040, 55, 128, 40);
+		lblNewLabel_2.setFont(new Font("Times New Roman", Font.BOLD, 30));
+		lblNewLabel_2.setBounds(1039, 30, 150, 40);
 		add(lblNewLabel_2);
 		
 		//Panel chọn bàn
@@ -524,8 +588,8 @@ public class Goimon extends JPanel {
 		JLabel lblNewLabel_1 = new JLabel("BÀN ĂN");
 		lblNewLabel_1.setForeground(new Color(75, 0, 130));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 25));
-		lblNewLabel_1.setBounds(273, 58, 128, 40);
+		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 30));
+		lblNewLabel_1.setBounds(279, 30, 128, 40);
 		add(lblNewLabel_1);
 		
 		String btn[] = {"1","2","3","4","5",
@@ -625,7 +689,7 @@ public class Goimon extends JPanel {
 			                	            int quantity = resultSetItems.getInt("quantity");
 
 			                	            // Thực hiện truy vấn để lấy thông tin món ăn từ cơ sở dữ liệu
-			                	            String sqlFoodDrink = "SELECT Name, price FROM food_drink WHERE ID = ?";
+			                	            String sqlFoodDrink = "SELECT Name, price, DonVi FROM food_drink WHERE ID = ?";
 			                	            PreparedStatement pstmtFoodDrink = conn.prepareStatement(sqlFoodDrink);
 			                	            pstmtFoodDrink.setInt(1, itemID);
 			                	            ResultSet resultSetFoodDrink = pstmtFoodDrink.executeQuery();
@@ -633,13 +697,15 @@ public class Goimon extends JPanel {
 			                	            if (resultSetFoodDrink.next()) {
 			                	                String selectedItem = resultSetFoodDrink.getString("Name");
 			                	                int price = resultSetFoodDrink.getInt("price");
+			                	                String donvi = resultSetFoodDrink.getString("DonVi");
 
-			                	                Object[] row = new Object[5];
+			                	                Object[] row = new Object[6];
 			                	                row[0] = itemID;
 			                	                row[1] = selectedItem;
 			                	                row[2] = price;
 			                	                row[3] = quantity;
-			                	                row[4] = quantity * price;
+			                	                row[4] = donvi;
+			                	                row[5] = quantity * price;
 			                	                model.addRow(row);
 			                	                total += price * quantity;
 			                	                tpTotal.setText(String.valueOf(total));
@@ -665,6 +731,37 @@ public class Goimon extends JPanel {
 		}
 		
 		panel2.add(btnConfirm);
+		
+		JLabel lblVnd = new JLabel("VND");
+		lblVnd.setHorizontalAlignment(SwingConstants.CENTER);
+		lblVnd.setForeground(new Color(75, 0, 130));
+		lblVnd.setFont(new Font("Times New Roman", Font.BOLD, 22));
+		lblVnd.setBounds(719, 600, 59, 25);
+		panel2.add(lblVnd);
+		
+		JLabel lblnGivnd = new JLabel("Đơn giá (VND):");
+		lblnGivnd.setForeground(new Color(75, 0, 130));
+		lblnGivnd.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		lblnGivnd.setBounds(77, 180, 126, 20);
+		panel2.add(lblnGivnd);
+		
+		txtGia = new JTextField();
+		txtGia.setForeground(new Color(75, 0, 130));
+		txtGia.setBackground(new Color(255, 255, 255));
+		txtGia.setEditable(false);
+		txtGia.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		txtGia.setBorder(new LineBorder(new Color(169, 169, 169), 1, true));
+		txtGia.setBounds(212, 177, 198, 25);
+		panel2.add(txtGia);
+		
+		txtDonVi = new JTextField();
+		txtDonVi.setEnabled(false);
+		txtDonVi.setBorder(new LineBorder(new Color(169, 169, 169)));
+		txtDonVi.setForeground(new Color(75, 0, 130));
+		txtDonVi.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		txtDonVi.setBounds(279, 232, 96, 25);
+		panel2.add(txtDonVi);
+		txtDonVi.setColumns(10);
 				
 	}
 	public int getCurrentBillID() {
@@ -733,5 +830,24 @@ public class Goimon extends JPanel {
 	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
+	
+	private static class RoundedBorder implements Border {
+        private int radius;
 
+        RoundedBorder(int radius) {
+            this.radius = radius;
+        }
+
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.radius + 1, this.radius + 1, this.radius + 2, this.radius);
+        }
+
+        public boolean isBorderOpaque() {
+            return true;
+        }
+
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        }
+    }
 }
