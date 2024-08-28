@@ -16,19 +16,22 @@ public class Drink_Cache {
     public static List<String> Drink_Name = new ArrayList<>();
     public static List<Integer> Drink_Price = new ArrayList<>();
     public static List<Integer> Drink_Quantity = new ArrayList<>();
+    public static List<Integer> classify= new ArrayList<>();
+	public static List<Integer> status= new ArrayList<>();
 
     public Drink_Cache() throws SQLException {
         connect connector = new connect();
         Connection conn = connector.connection;
         if (conn != null) {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM food_drink WHERE classify = 1";
+            String sql = "SELECT * FROM food_drink WHERE classify = 4";
             ResultSet resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 Drink_ID.add(resultSet.getInt("ID"));
                 Drink_Name.add(resultSet.getString("Name"));
                 Drink_Price.add(resultSet.getInt("Price"));
-                Drink_Quantity.add(resultSet.getInt("Quantity"));
+                classify.add(resultSet.getInt("Classify"));
+        		status.add(resultSet.getInt("Status"));
             }
             resultSet.close();
             stmt.close();

@@ -15,20 +15,22 @@ public class Food_Cache {
 		public static List<Integer> FID = new ArrayList<>();
 		public static List<String>  FName = new ArrayList<>();;
 		public static List<Integer>  FPrice = new ArrayList<>();;
-		public static List<Integer>  FQuantity = new ArrayList<>();
+		public static List<Integer> classify= new ArrayList<>();
+		public static List<Integer> status= new ArrayList<>();
 		public Food_Cache() throws SQLException {	
 			connect connector = new connect();
 	        Connection conn = connector.connection;
 			if( conn != null) {
 			
 				Statement stmt = conn.createStatement();
-	        	String sql = "SELECT * FROM food_drink WHERE classify = 0";
+	        	String sql = "SELECT * FROM food_drink";
 	        	ResultSet resultSet = stmt.executeQuery(sql);
 	        	while (resultSet.next()) {
 	        		FID.add(resultSet.getInt("ID"));
 	        		FName.add(resultSet.getString("Name"));
 	        		FPrice.add(resultSet.getInt("Price"));
-	        		FQuantity.add(resultSet.getInt("Quantity"));
+	        		classify.add(resultSet.getInt("Classify"));
+	        		status.add(resultSet.getInt("Status"));
 	        	}	
 	        resultSet.close();
 	        stmt.close();
@@ -38,106 +40,70 @@ public class Food_Cache {
 			}
 		}
 		
-		 public static int getCurrentQuantity(int id) throws SQLException {
-		        connect connector = new connect();
-		        Connection conn = connector.connection;
-		        int currentQuantity = 0;
-		        if (conn != null) {
-		            String sql = "SELECT Quantity FROM food_drink WHERE ID = ?";
-		            PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
-		            preparedStatement.setInt(1, id);
-		            ResultSet resultSet = preparedStatement.executeQuery();
-		            if (resultSet.next()) 
-		                currentQuantity = resultSet.getInt("Quantity");
-		            resultSet.close();
-		            preparedStatement.close();
-		            conn.close();
-		        }
-		        return currentQuantity;
-		 }
-		public static void addFood(int id, String name, int price, int quantity) throws SQLException {
-	        connect connector = new connect();
-	        Connection conn = connector.connection;
-	        if (conn != null) {
-	            String sql = "INSERT INTO food_drink (ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
-	            PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
-	            preparedStatement.setInt(1, id);
-	            preparedStatement.setString(2, name);
-	            preparedStatement.setInt(3, price);
-	            preparedStatement.setInt(4, quantity);
-	            preparedStatement.executeUpdate();
-	            preparedStatement.close();
-	            conn.close();
-	        }
-	        FID.add(id);
-		    FName.add(name);
-		    FPrice.add(price);
-		    FQuantity.add(quantity);
-	    }
-		
-		public static void updateFood(int id, int newId, String newName, int newPrice, int newQuantity) throws SQLException {
-		    connect connector = new connect();
-		    Connection conn = connector.connection;
-		    if (conn != null) {
-		        String sql = "UPDATE food_drink SET ID = ?, Name = ?, Price = ?, Quantity = ? WHERE ID = ?";
-		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
-		        preparedStatement.setInt(1, newId);
-		        preparedStatement.setString(2, newName);
-		        preparedStatement.setInt(3, newPrice);
-		        preparedStatement.setInt(4, newQuantity);
-		        preparedStatement.setInt(5, id);
-		        preparedStatement.executeUpdate();
-		        preparedStatement.close();
-		        conn.close();
-		    }
-
-		    int index = FID.indexOf(id);
-		    if (index != -1) { // Kiểm tra xem mục có tồn tại trong danh sách không
-		        FID.set(index, newId); // Cập nhật thông tin
-		        FName.set(index, newName);
-		        FPrice.set(index, newPrice);
-		        FQuantity.set(index, newQuantity);
-		    }
-		}
-
-		
-		public static void deleteFood(int id) throws SQLException {
-		    connect connector = new connect();
-		    Connection conn = connector.connection;
-		    if (conn != null) {
-		        String sql = "DELETE FROM food_drink WHERE ID = ?";
-		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
-		        preparedStatement.setInt(1, id);
-		        preparedStatement.executeUpdate();
-		        preparedStatement.close();
-		        conn.close();
-		    }
-		    int index = FID.indexOf(id);
-	        if (index != -1) { 
-	            FID.remove(index); 
-	            FName.remove(index);
-	            FPrice.remove(index);
-	            FQuantity.remove(index);
-	        }
-		}
-
-		public static void updateQuantity(int id, int newQuantity) throws SQLException {
-		    connect connector = new connect();
-		    Connection conn = connector.connection;
-		    if (conn != null) {
-		    	int currentQuantity = getCurrentQuantity(id);
-		        String sql = "UPDATE food_drink SET Quantity = ? WHERE ID = ? AND classify = 0"; 
-		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
-		        preparedStatement.setInt(1, currentQuantity-newQuantity);
-		        preparedStatement.setInt(2, id);
-		        preparedStatement.executeUpdate();
-		        preparedStatement.close();
-		        conn.close();
-		    }
-		    int index = FID.indexOf(id);
-		    if (index != -1) {
-		        FQuantity.set(index, newQuantity);
-		    }
-
-		}
+		 
+//		public static void addFood(int id, String name, int price, int quantity) throws SQLException {
+//	        connect connector = new connect();
+//	        Connection conn = connector.connection;
+//	        if (conn != null) {
+//	            String sql = "INSERT INTO food_drink (ID, Name, Price, Quantity) VALUES (?, ?, ?, ?)";
+//	            PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
+//	            preparedStatement.setInt(1, id);
+//	            preparedStatement.setString(2, name);
+//	            preparedStatement.setInt(3, price);
+//	            preparedStatement.setInt(4, quantity);
+//	            preparedStatement.executeUpdate();
+//	            preparedStatement.close();
+//	            conn.close();
+//	        }
+//	        FID.add(id);
+//		    FName.add(name);
+//		    FPrice.add(price);
+//		    classify.add(null);
+//	    }
+//		
+//		public static void updateFood(int id, int newId, String newName, int newPrice, int newQuantity) throws SQLException {
+//		    connect connector = new connect();
+//		    Connection conn = connector.connection;
+//		    if (conn != null) {
+//		        String sql = "UPDATE food_drink SET ID = ?, Name = ?, Price = ?, Quantity = ? WHERE ID = ?";
+//		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
+//		        preparedStatement.setInt(1, newId);
+//		        preparedStatement.setString(2, newName);
+//		        preparedStatement.setInt(3, newPrice);
+//		        preparedStatement.setInt(4, newQuantity);
+//		        preparedStatement.setInt(5, id);
+//		        preparedStatement.executeUpdate();
+//		        preparedStatement.close();
+//		        conn.close();
+//		    }
+//
+//		    int index = FID.indexOf(id);
+//		    if (index != -1) { // Kiểm tra xem mục có tồn tại trong danh sách không
+//		        FID.set(index, newId); // Cập nhật thông tin
+//		        FName.set(index, newName);
+//		        FPrice.set(index, newPrice);
+//		        FQuantity.set(index, newQuantity);
+//		    }
+//		}
+//
+//		
+//		public static void deleteFood(int id) throws SQLException {
+//		    connect connector = new connect();
+//		    Connection conn = connector.connection;
+//		    if (conn != null) {
+//		        String sql = "DELETE FROM food_drink WHERE ID = ?";
+//		        PreparedStatement preparedStatement = (PreparedStatement) conn.prepareStatement(sql);
+//		        preparedStatement.setInt(1, id);
+//		        preparedStatement.executeUpdate();
+//		        preparedStatement.close();
+//		        conn.close();
+//		    }
+//		    int index = FID.indexOf(id);
+//	        if (index != -1) { 
+//	            FID.remove(index); 
+//	            FName.remove(index);
+//	            FPrice.remove(index);
+//	            FQuantity.remove(index);
+//	        }
+//		}
 }
