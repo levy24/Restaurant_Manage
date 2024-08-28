@@ -15,6 +15,7 @@ import connectDTB.connect;
 import data_cache.Drink_Cache;
 import data_cache.Employee_Cache;
 import data_cache.Food_Cache;
+import security.Crypt;
 
 public class Chuc_Nang {
 	private static connect conn = new connect();
@@ -22,23 +23,52 @@ public class Chuc_Nang {
 	public Chuc_Nang() {
 		// TODO Auto-generated constructor stub
 	}
+	public static void Tim_kiem_NV(String x) throws SQLException {
+		String sql = "SELECT * FROM employment WHERE Name LIKE ?";
+		PreparedStatement prpStatement = (PreparedStatement) connection.prepareStatement(sql);
+		prpStatement.setString(1,"%"+ x + "%");
+		
+		ResultSet resultSet = prpStatement.executeQuery();
+		
+		Object[] rowData = new Object[6];
+		employee.model.setRowCount(0);
+		while(resultSet.next()) {
+			rowData[0] = resultSet.getInt("Emp_ID");
+			rowData[1] = resultSet.getString("Name");
+			rowData[2] = resultSet.getString("Phone");
+			rowData[3] = resultSet.getString("Address");
+			rowData[4] = resultSet.getString("Position");
+			String pass = "";
+			try {
+				pass = Crypt.decrypt(resultSet.getString("Password"));
+			} catch (Exception e){
+				
+			}
+			rowData[5] = pass;
+			
+			employee.model.addRow(rowData);
+		}
+		prpStatement.close();
+	}
 	public static void Tim_kiem(String x, int y) throws SQLException {
 		
-		String sql = "SELECT Name, Price, Status FROM food_drink WHERE Classify = ? AND Name LIKE ?";
+		String sql = "SELECT ID, Name, Price, Status, DonVi FROM food_drink WHERE Name LIKE ?";
 	    PreparedStatement prp = (PreparedStatement) connection.prepareStatement(sql);
-	    prp.setInt(1, y);
-	    prp.setString(2, "%" + x + "%");
+	    //prp.setInt(1, y);
+	    prp.setString(1, "%" + x + "%");
 		
 		ResultSet result = prp.executeQuery();
 		
-		Object[] rowData = new Object[3];
+		Object[] rowData = new Object[5];
 		if(CTC.tableModel.getRowCount() > 0 ) {
 			CTC.tableModel.setRowCount(0);
 		}
 		while(result.next()) {
-			rowData[0] = result.getString("Name");
-			rowData[1] = result.getInt("Price");
-			rowData[2] = (result.getInt("Status") == 0) ? "Off" : "On";
+			rowData[0] = result.getInt("ID");
+			rowData[1] = result.getString("Name");
+			rowData[2] = result.getInt("Price");
+			rowData[3] = result.getString("DonVi");
+			rowData[4] = (result.getInt("Status") == 0) ? "Off" : "On";
 			
 			CTC.tableModel.addRow(rowData);
 		}
@@ -65,27 +95,29 @@ public class Chuc_Nang {
 	        }
 	    
 	}
-	public static void Them_mon(String name, int price, int classify, String status) throws SQLException {
-		 String sql = "INSERT INTO food_drink (Name, Price, Classify, Status) VALUES (?, ?, ?, ?)";
+	public static void Them_mon(String name, int price, int classify, String status, String dv) throws SQLException {
+		 String sql = "INSERT INTO food_drink (Name, Price, Classify, Status, DonVi) VALUES (?, ?, ?, ?, ?)";
 		 PreparedStatement statement = (PreparedStatement) connection.prepareStatement(sql);
 		 statement.setString(1,name); 
          statement.setInt(2, price); 
          statement.setInt(3, classify); 
          int x = (status.equalsIgnoreCase("On")) ? 1 : 0; 
          statement.setInt(4, x );
+         statement.setString(5, dv );
          statement.executeUpdate();
          statement.close();
 		
 	}
-	public static void Cap_nhat(int id,String name, int newPrice, String status) throws SQLException {
-	    String sql = "UPDATE food_drink SET Name = ?, Price = ?, Status = ? WHERE ID = ?";
+	public static void Cap_nhat(int id,String name, int newPrice, String status, String dv) throws SQLException {
+	    String sql = "UPDATE food_drink SET Name = ?, Price = ?, Status = ?, DonVi = ? WHERE ID = ?";
 	    PreparedStatement statement = (PreparedStatement) connection.prepareStatement(sql);
 	    
 	    statement.setString(1, name);
 	    statement.setInt(2, newPrice);
 	    int x = (status.equalsIgnoreCase("On")) ? 1 : 0; 
 	    statement.setInt(3, x);
-	    statement.setInt(4, id); 
+	    statement.setString(4, dv );
+	    statement.setInt(5, id); 
 	    
 	    statement.executeUpdate();
 	    statement.close();
