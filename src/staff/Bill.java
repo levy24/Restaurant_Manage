@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -30,9 +31,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import connectDTB.connect;
+import font.RoundedBorder;
 import login.dangnhap1;
 
 import java.awt.Font;
@@ -42,6 +45,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import java.awt.Label;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import java.util.Date;
+import java.util.Calendar;
 
 public class Bill extends JPanel implements ActionListener {
 
@@ -55,84 +63,151 @@ public class Bill extends JPanel implements ActionListener {
     private int SelectedValue, empCash;
     private static int curr;
     private static int status = 0;
-	/**
-	 * Create the panel.
-	 */
-	public Bill() {
-		 	
-		 	setBounds(0, 0, 1540, 815);
-	        setBorder(new EmptyBorder(5, 5, 5, 5));
-	        setBackground(new Color(255, 222, 173));
-	        setLayout(null);
+    private JTextField txtFind;
+    public Bill() {
+	 	
+	 	setBounds(0, 0, 1540, 815);
+        setBorder(new EmptyBorder(5, 5, 5, 5));
+        setBackground(new Color(255, 222, 173));
+        setLayout(null);
 
-	        model = new DefaultTableModel();
-	        
-	        panel = new JPanel();
-	        panel.setBackground(new Color(255, 250, 240));
-	        panel.setBounds(703, 186, 794, 587);
-	        panel.setBorder(BorderFactory.createLineBorder(Color.black));
-	        add(panel);
-	        panel.setLayout(null);
-	        table = new JTable(model);
-	        JScrollPane scrollPane = new JScrollPane(table);
-	        scrollPane.setBackground(new Color(255, 250, 240));
-	        scrollPane.setBounds(46, 263, 681, 507);
-	        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
-	        
-	        scrollPane.setEnabled(false);
-	        scrollPane.setPreferredSize(new Dimension(600, 400)); 
-	        
-	        JPanel panel_1 = new JPanel();
-	        panel_1.setBounds(1261, 82, 236, 74);
-	        panel_1.setBorder(BorderFactory.createLineBorder(Color.black));
-	        add(panel_1);
-	        panel_1.setBackground(new Color(255, 250, 240));
-	        panel_1.setLayout(null);
-	       
-	        issue = new JButton("In");
-	        issue.setForeground(new Color(75, 0, 130));
-	        issue.setBorder(BorderFactory.createLineBorder(Color.black));
-	        issue.setFont(new Font("Times New Roman", Font.BOLD, 25));
-	        issue.addActionListener(this);
-	        
-	        issue.setBounds(130, 10, 90, 54);
-	        panel_1.add(issue);
-	        
-	        edit = new JButton("Xem");
-	        edit.setForeground(new Color(75, 0, 130));
-	        edit.setBorder(BorderFactory.createLineBorder(Color.black));
-	        edit.setFont(new Font("Times New Roman", Font.BOLD, 25));
-	        edit.setBounds(10, 10, 90, 54);
-	        panel_1.add(edit);
-	        edit.addActionListener(this); 
-	        JLabel lbt = new JLabel("Danh sách bàn chưa thanh toán: ");
-	        lbt.setBounds(10, 17, 408, 37);
-	        lbt.setFont(new Font("Times New Roman", Font.BOLD, 28));
-	        lbt.setForeground(new Color(75, 0, 130));
-	        cbx = new JComboBox<Object>();
-	        cbx.setBounds(428, 24, 75, 30);
-	        cbx.setForeground(new Color(75, 0, 130));
-	        cbx.setBorder(BorderFactory.createLineBorder(Color.black));
-	        cbx.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-	        cbx.setEditable(true);
-	        
-	        ArrayList<String> list = LoadDataToCombobox();
-	        for(String item : list) {
-	        	cbx.addItem(item.toString());
-	        }
-	        
-	        JPanel panel_2 = new JPanel();
-	        panel_2.setBackground(new Color(255, 250, 240));
-	        panel_2.setBounds(703, 82, 528, 74);
-	        panel_2.setBorder(BorderFactory.createLineBorder(Color.black));
-	        add(panel_2);
-	        panel_2.setLayout(null);
-	        panel_2.add(lbt);
-	        panel_2.add(cbx);
-
-	        updateTable();
+        model = new DefaultTableModel();
+        
+        panel = new JPanel();
+        panel.setBackground(new Color(255, 250, 240));
+        panel.setBounds(759, 109, 700, 664);
+        panel.setBorder(BorderFactory.createLineBorder(Color.black));
+        add(panel);
+        panel.setLayout(null);
+        table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBackground(new Color(255, 250, 240));
+        scrollPane.setBounds(10, 60, 611, 655);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
+        
+        scrollPane.setEnabled(false);
+        scrollPane.setPreferredSize(new Dimension(600, 400)); 
+        
+        JPanel panel_1 = new JPanel();
+        panel_1.setBounds(1349, 48, 110, 51);
+        panel_1.setBorder(BorderFactory.createLineBorder(Color.black));
+        add(panel_1);
+        panel_1.setBackground(new Color(255, 250, 240));
+        panel_1.setLayout(null);
+       
+  
+        edit = new JButton("Xem");
+        edit.setBackground(new Color(255, 255, 255));
+        edit.setBorder(new RoundedBorder(20));
+        edit.setForeground(new Color(75, 0, 130));
+        edit.setBorder(new LineBorder(new Color(64, 0, 128), 1, true));
+        edit.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        edit.setBounds(10, 10, 90, 35);
+        panel_1.add(edit);
+        edit.addActionListener(this);
+        JLabel lbt = new JLabel("Danh sách bàn chưa thanh toán: ");
+        lbt.setBounds(31, 10, 398, 37);
+        lbt.setFont(new Font("Times New Roman", Font.BOLD, 28));
+        lbt.setForeground(new Color(75, 0, 130));
+        cbx = new JComboBox<Object>();
+        cbx.setBounds(454, 10, 95, 30);
+        cbx.setForeground(new Color(75, 0, 130));
+        cbx.setBorder(BorderFactory.createLineBorder(Color.black));
+        cbx.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        cbx.setEditable(true);
+        
+        ArrayList<String> list = LoadDataToCombobox();
+        for(String item : list) {
+        	cbx.addItem(item.toString());
+        }
+        
+        JPanel panel_2 = new JPanel();
+        panel_2.setBackground(new Color(255, 250, 240));
+        panel_2.setBounds(759, 48, 580, 51);
+        panel_2.setBorder(BorderFactory.createLineBorder(Color.black));
+        add(panel_2);
+        panel_2.setLayout(null);
+        panel_2.add(lbt);
+        panel_2.add(cbx);
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            String url = "jdbc:mysql://localhost:3306/data";
+            Connection con = DriverManager.getConnection(url, "root", "");
+            String sql = "SELECT * FROM bill";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            updateTable(rs);
+            rs.close();
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        JPanel panel_3 = new JPanel();
+        panel_3.setBackground(new Color(255, 250, 240));
+        panel_3.setBounds(42, 48, 631, 725);
+        panel_3.add(scrollPane, BorderLayout.CENTER);
+        add(panel_3);
+        panel_3.setLayout(null);
+        
+        JLabel lblNewLabel = new JLabel("Tìm kiếm:");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        lblNewLabel.setBounds(30, 18, 90, 20);
+        panel_3.add(lblNewLabel);
+        
+        txtFind = new JTextField();
+        txtFind.setBounds(116, 14, 158, 36);
+        panel_3.add(txtFind);
+        txtFind.setColumns(10);
+        txtFind.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String content = txtFind.getText();
+        		String sql = "SELECT * FROM bill WHERE bill_ID LIKE ?";
+        		search(content, sql);
+        	}
+        });
+        JButton btnFind = new JButton("Tìm");
+        btnFind.setBackground(new Color(255, 255, 255));
+        btnFind.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        btnFind.setBounds(524, 14, 97, 36);
+        btnFind.setBorder(new RoundedBorder(20));
+        panel_3.add(btnFind);
+        
+        JSpinner dateSpinner = new JSpinner();
+        dateSpinner.setModel(new SpinnerDateModel(new Date(1718038800000L), null, null, Calendar.DAY_OF_YEAR));
+        dateSpinner.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        dateSpinner.setBounds(284, 14, 230, 34);
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd");
+        dateSpinner.setEditor(dateEditor);
+        panel_3.add(dateSpinner);
+        btnFind.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+    		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+             String date = sdf.format((Date) dateSpinner.getValue());
+             String sql = "SELECT * FROM bill WHERE Time LIKE ?";
+             search(date, sql);
+    	}
+    });
+        
+        
+}
+	public static void search(String search, String sql) {
+	    try {
+	        Class.forName("com.mysql.jdbc.Driver");
+	        String url = "jdbc:mysql://localhost:3306/data";
+	        Connection con = DriverManager.getConnection(url, "root", "");
+	        PreparedStatement pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1, "%" + search + "%"); 
+	        ResultSet rs = pstmt.executeQuery();
+	        updateTable(rs); 
+	        rs.close();
+	        pstmt.close();
+	        con.close();
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
-	
+
 	public static ArrayList<String> LoadDataToCombobox(){
     	ArrayList<String> list = new ArrayList<String>();
     	try {
@@ -166,7 +241,8 @@ public class Bill extends JPanel implements ActionListener {
 	            PDPageContentStream contentStream = new PDPageContentStream(document, page);
 	            PDFont font = null;
 	            try {
-	                font = PDType0Font.load(document, new File("src/font/arial-unicode-ms.ttf"));
+	                //font = PDType0Font.load(document, new File("/Users/macbook/eclipse-workspace/Java_Database/font/arial-unicode-ms.ttf"));
+	            	font = PDType0Font.load(document, new File("src/font/arial-unicode-ms.ttf"));
 	            } catch (IOException e) {
 	            	JOptionPane.showMessageDialog(null, "Not found! " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	            }
@@ -277,61 +353,55 @@ public class Bill extends JPanel implements ActionListener {
 	            contentStream.showText("        Xin cảm ơn và hẹn gặp lại quý khách!");
 	            contentStream.endText();			
 	            yPosition -= leading;
-	            
-	            // Đóng content stream
 	            contentStream.close();
-	            // Lưu tài liệu PDF ra file
 	            document.save(billID.toString()+".pdf");
-	            // Đóng tài liệu PDF
 	            document.close();
-	            JOptionPane.showMessageDialog(null, "Xuất hoá đơn thành công.");
+	            JOptionPane.showMessageDialog(null, "Xác nhận và in hoá đơn thành công.");
 	        } catch (Exception e) {
 	            JOptionPane.showMessageDialog(null, "Không thể xuất hoá đơn: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        }
 	    }
 
-	 public static void updateTable() {
-	        try {
-	            Class.forName("com.mysql.jdbc.Driver");
-	            String url = "jdbc:mysql://localhost:3306/data"; 
-	            Connection con = DriverManager.getConnection(url, "root", "");
-	            String sql = "SELECT * FROM bill ";
-	            PreparedStatement pstmt = con.prepareStatement(sql);
-	            ResultSet rs = pstmt.executeQuery();
-	            model.setRowCount(0); 
-	            ResultSetMetaData metaData = rs.getMetaData();
-	            int columnCount = metaData.getColumnCount();
-	            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-	                model.addColumn(metaData.getColumnLabel(columnIndex));
-	                if (columnIndex == 2) {
-	                    table.getColumnModel().getColumn(columnIndex - 1).setWidth(400);
-	                }  
-	            }
-	            while (rs.next()) {
-	                Object[] row = new Object[columnCount];
-	                for (int i = 1; i <= columnCount; i++) {
-	                    row[i - 1] = rs.getObject(i);
-	                }
-	          
-	                model.addRow(row);
-	            } 
-	            rs.close();
-	            pstmt.close();
-	            con.close();
-	        } catch (Exception ex) {
-	            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    }
+	 public static void updateTable(ResultSet rs) {
+		    try {
+		        ResultSetMetaData metaData = rs.getMetaData();
+		        int columnCount = metaData.getColumnCount();
+		        model.setRowCount(0); 
+		        model.setColumnCount(0);
+		        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+		            model.addColumn(metaData.getColumnLabel(columnIndex));
+		        }
+		        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+		            if (columnIndex == 2) {
+		                table.getColumnModel().getColumn(columnIndex - 1).setPreferredWidth(180);
+		            } else {
+		                table.getColumnModel().getColumn(columnIndex - 1).setPreferredWidth(80);
+		            }
+		        }
+		        while (rs.next()) {
+		            Object[] row = new Object[columnCount];
+		            for (int i = 1; i <= columnCount; i++) {
+		                row[i - 1] = rs.getObject(i);
+		            }
+		            model.addRow(row);
+		        }
+		        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		        table.revalidate();
+		        table.repaint();
+		    } catch (Exception ex) {
+		        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		    }
+		}
+
 	    public void editBill(Object[] rowData, Object billID) {
 	    	
 	    	panel.removeAll();
 	        JTextField[] textFields = new JTextField[7];
 	        JTextArea textArea = new JTextArea();
-	        
 	        String[] columnNames = {"Mã bill", "Thời gian", "Mã bàn", "NV tạo đơn", "NV thanh toán", "Tổng tiền",  "Trạng thái", "Món"};
 	        for (int i = 0; i < columnNames.length; i++) {
 	            JLabel label = new JLabel(columnNames[i] + ":");
-	            label.setBounds(10, 10 + 25 * i, 100, 20);
+	            label.setBounds(150, 15 + 25 * i, 100, 20);
 	            panel.add(label);
 	            if(i == columnNames.length - 1) {
 	            	try {
@@ -359,17 +429,17 @@ public class Bill extends JPanel implements ActionListener {
 	                    ex.printStackTrace();
 	                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
-	            	textArea.setBounds(120,10 + 25*i, 200, 50);
+	            	textArea.setBounds(340,15 + 25*i, 200, 100);
 	            	textArea.setBackground(Color.white);
 	            	textArea.setEditable(false);
 					JScrollPane scrollPane = new JScrollPane(textArea);
-					scrollPane.setBounds(120, 10 + 25 * i, 200, 50);
+					scrollPane.setBounds(340, 15 + 25 * i, 200, 100);
 					scrollPane.setEnabled(false);
-					scrollPane.setPreferredSize(new Dimension(200, 100));
+					scrollPane.setPreferredSize(new Dimension(200, 150));
 					panel.add(scrollPane, BorderLayout.CENTER);
 	            } else {
 	            	textFields[i] = new JTextField();
-	            	textFields[i].setBounds(120, 10 + 25 * i, 200, 20);
+	            	textFields[i].setBounds(340, 15 + 25 * i, 200, 20);
 	            	textFields[i].setEditable(false);
 	            	if(i < rowData.length) {
 	            		textFields[i].setText(rowData[i].toString());
@@ -379,31 +449,41 @@ public class Bill extends JPanel implements ActionListener {
 	        }
 	        JTextField discount = new JTextField();
 	        JLabel label1 = new JLabel("Giảm giá(%):");
-	        label1.setBounds(10, 250, 100, 20);
-	        discount.setBounds(120,250,200,20);
+	        label1.setBounds(150, 300, 100, 20);
+	        discount.setBounds(340,300,200,20);
 	        discount.setText("0");
 	        
 	        panel.add(label1);
 	        panel.add(discount);
 	        
-	        btnUpdate = new JButton("Thanh toán");
-	        btnUpdate.setHorizontalAlignment(SwingConstants.RIGHT);
-	        btnUpdate.setBounds(100, 300, 120, 60);
+	        btnUpdate = new JButton("Xác nhận và in hoá đơn");
+	        btnUpdate.setHorizontalAlignment(SwingConstants.CENTER);
+	        btnUpdate.setBorder(new RoundedBorder(20));
+	        btnUpdate.setBackground(new Color(255, 255, 255));
+	        btnUpdate.setBounds(355, 330, 180, 30);
 	        panel.add(btnUpdate);       
 	        btnUpdate.setEnabled(true);
 	        btnUpdate.addActionListener(new ActionListener() {
 	            @Override
-	            public void actionPerformed(ActionEvent e) {
+public void actionPerformed(ActionEvent e) {
 	            	
-	            	double dc = Double.parseDouble(discount.getText());
-	                try {
+	            	try { 
+	            	int dc = Integer.parseInt(discount.getText());
+	            	int totalBill = Integer.parseInt(textFields[5].getText());
+
+	                if (dc < 0 || dc > 100) {
+	                   JOptionPane.showMessageDialog(null, "Giá trị không hợp lệ. Hãy nhập lại.");
+	                   discount.setText("0");
+	                } else { 
+	                    try {
+	                    dc = Integer.parseInt(discount.getText());
 	                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/data", "root", "");
 	                    String sqlBill = "UPDATE bill SET Status = ?, Total = ? WHERE Bill_ID=?";
 	                    PreparedStatement pstmtBill = con.prepareStatement(sqlBill);
 	                    pstmtBill.setBoolean(1, true);
-	                    discountPrice = (int) ((Integer.parseInt(textFields[5].getText()))*(dc/100));
-	                    finalPrice = (int) ((Integer.parseInt(textFields[5].getText()) - discountPrice));
-	                    
+	                    discountPrice = totalBill * dc / 100;
+	                    finalPrice = totalBill - discountPrice;
+	                
 						pstmtBill.setInt(2, finalPrice);
 						
 						pstmtBill.setInt(3, Integer.parseInt(textFields[0].getText())); 
@@ -412,7 +492,7 @@ public class Bill extends JPanel implements ActionListener {
 	                    pstmtBill.close();
 	                   
 	                    if (rowsAffectedBill > 0) {
-	                        JOptionPane.showMessageDialog(null, "Xác nhận thanh toán thành công.");
+	                        
 	                        status = 1;
 	                        connect connector = new connect();
 	        				Connection conn = connector.connection;
@@ -423,8 +503,9 @@ public class Bill extends JPanel implements ActionListener {
 	  		        		  stmt = conn.createStatement();
 	  		        		  stmt.executeUpdate(updateTableQuery);
 	  		        		  Goimon.updateTableStatusInUI();
+	  		        		  conn.close();
+	  		        		  stmt.close();
 	  		        	  } catch (SQLException e1) {
-	  						// TODO Auto-generated catch block
 	  						e1.printStackTrace();
 	  		        	  }
 	                    } else {
@@ -434,13 +515,109 @@ public class Bill extends JPanel implements ActionListener {
 	                } catch (Exception ex) {
 	                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
-	                UpdateDataToComboBox();
+	                
+	                String[] content = { "Mã bill", "Thời gian", "Bàn", "NV tạo đơn", "NV thu tiền" };
+					String[] name = null;
+					String[] quantity = null;
+					String[] price = null;
+					String[] total_price = null;
+					try {
+						String selectRow = null;
+						Class.forName("com.mysql.jdbc.Driver");
+						String url = "jdbc:mysql://localhost:3306/data";
+						Connection con = DriverManager.getConnection(url, "root", "");
+						String sql = "SELECT * FROM bill Where bill_ID = ?";
+						PreparedStatement pstmt = con.prepareStatement(sql);
+						pstmt.setInt(1, curr);
+						ResultSet rs = pstmt.executeQuery();
+						Object billID = null;
+						Object Total = null;
+						Object[] rowData = null;
+						 
+						if (rs.next()) {
+							selectRow = rs.getString("bill_ID");
+							rowData = new Object[model.getColumnCount()];
+							for (int i = 0; i < model.getColumnCount(); i++) {
+								rowData[i] = rs.getObject(i + 1);
+							}
+							billID = rowData[0];
+							Total = totalBill;
+							rowData[3] = getName((int)rowData[3]);
+							rowData[4] = getName((int) rowData[4]);
+							Component[] components = getComponents();
+							for (Component component : components) {
+								if (component instanceof JTextField) {
+									remove(component);
+								}
+							}
+						}
+						String query = "SELECT fdc.Name, fdc.Price, od.Quantity, od.total_price "
+								+ "FROM food_drink AS fdc " + "JOIN order_details AS od ON fdc.ID = od.item_ID "
+								+ "JOIN bill AS b ON od.bill_ID = b.bill_ID " + "WHERE b.bill_ID = ?";
+						PreparedStatement pstmt1 = con.prepareStatement(query);
+						pstmt1.setString(1, billID.toString());
+						ResultSet rs1 = pstmt1.executeQuery();
+						rs1.last(); 
+						int numRows = rs1.getRow(); 
+						rs1.beforeFirst();
+						name = new String[numRows];
+						quantity = new String[numRows];
+						price = new String[numRows];
+						total_price = new String[numRows];
+						int index = 0;
+						while (rs1.next()) {
+							name[index] = rs1.getString("Name");
+							quantity[index] = rs1.getString("Quantity");
+							price[index] = rs1.getString("Price");
+							total_price[index] = rs1.getString("total_price");
+							index++;
+						}
+							createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
+								discountPrice);
+						rs.close();
+						rs1.close();
+						pstmt.close();
+						pstmt1.close();
+						con.close();
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Loi: " + ex.getMessage(), "Loi:",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					UpdateDataToComboBox();
 	            }
-	        });
+	            } catch (NumberFormatException er) {
+	            	JOptionPane.showMessageDialog(null, "Giá trị không hợp lệ. Hãy nhập lại.");
+	            	discount.setText("");
+	            }
+	            }	        });
 	        revalidate();
 	        repaint();
 	    }
 	    
+	    public String getName(int rowData) {
+	        String name = null;
+	        try {
+	            Class.forName("com.mysql.jdbc.Driver");
+	            String url = "jdbc:mysql://localhost:3306/data";
+	            Connection con = DriverManager.getConnection(url, "root", "");
+	            String sql = "SELECT Name FROM employment WHERE Emp_ID = ?";
+	            PreparedStatement pstmt = con.prepareStatement(sql);
+	            pstmt.setInt(1, rowData);
+	            ResultSet rs = pstmt.executeQuery();
+
+	            if (rs.next()) {
+	                name = rs.getString("Name");
+	            }
+
+	            rs.close();
+	            pstmt.close();
+	            con.close();
+	        } catch (Exception er) {
+	            er.printStackTrace();
+	        }
+
+	        return name;
+	    }
 	    public void actionPerformed(ActionEvent e) {
 	    	String select = "";
 	    	if(cbx.getSelectedIndex() != -1) {
@@ -496,85 +673,6 @@ public class Bill extends JPanel implements ActionListener {
 			                JOptionPane.ERROR_MESSAGE);
 				}
 			}  
-			if (e.getSource() == issue){
-
-				String[] content = { "Mã bill", "Thời gian", "Bàn", "NV tạo đơn", "NV thanh toán" };
-				String[] name = null;
-				String[] quantity = null;
-				String[] price = null;
-				String[] total_price = null;
-				try {
-					String selectRow = null;
-					Class.forName("com.mysql.jdbc.Driver");
-					String url = "jdbc:mysql://localhost:3306/data";
-					Connection con = DriverManager.getConnection(url, "root", "");
-					String sql = "SELECT * FROM bill Where bill_ID = ?";
-					PreparedStatement pstmt = con.prepareStatement(sql);
-					pstmt.setInt(1, curr);
-					ResultSet rs = pstmt.executeQuery();
-					Object billID = null;
-					Object Total = null;
-					Object[] rowData = null;
-					 
-					if (rs.next()) {
-						selectRow = rs.getString("bill_ID");
-						rowData = new Object[model.getColumnCount()];
-						for (int i = 0; i < model.getColumnCount(); i++) {
-							rowData[i] = rs.getObject(i + 1);
-						}
-						billID = rowData[0];
-						Total = rs.getObject(6);
-						
-						Component[] components = getComponents();
-						for (Component component : components) {
-							if (component instanceof JTextField) {
-								remove(component);
-							}
-						}
-					}
-					String query = "SELECT fdc.Name, fdc.Price, od.Quantity, od.total_price "
-							+ "FROM food_drink AS fdc " + "JOIN order_details AS od ON fdc.ID = od.item_ID "
-							+ "JOIN bill AS b ON od.bill_ID = b.bill_ID " + "WHERE b.bill_ID = ?";
-					PreparedStatement pstmt1 = con.prepareStatement(query);
-					pstmt1.setString(1, billID.toString());
-					ResultSet rs1 = pstmt1.executeQuery();
-					// Đếm số lượng hàng trong ResultSet
-					rs1.last(); // Di chuyển tới hàng cuối cùng
-					int numRows = rs1.getRow(); // Lấy chỉ số hàng hiện tại
-					rs1.beforeFirst(); // Di chuyển về hàng đầu tiên
-					// Khởi tạo mảng với số phần tử là số hàng trong ResultSet
-					name = new String[numRows];
-					quantity = new String[numRows];
-					price = new String[numRows];
-					total_price = new String[numRows];
-					int index = 0;
-					while (rs1.next()) {
-						name[index] = rs1.getString("Name");
-						quantity[index] = rs1.getString("Quantity");
-						price[index] = rs1.getString("Price");
-						total_price[index] = rs1.getString("total_price");
-						index++;
-					}
-					if(status == 0) {
-						JOptionPane.showMessageDialog(null, "Bàn này chưa được thanh toán." , "Lời nhắc",
-						JOptionPane.ERROR_MESSAGE);
-					} else {
-						createPDF(rowData, billID, content, name, price, quantity, Total, total_price, finalPrice,
-							discountPrice);
-					}
-					rs.close();
-					rs1.close();
-					pstmt.close();
-					pstmt1.close();
-					con.close();
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Loi: " + ex.getMessage(), "Loi:",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
 	    	
 	}
-	    
-
-	    
 }
